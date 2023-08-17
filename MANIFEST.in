@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include nitta *.css
+recursive-include nitta *.csv
+recursive-include nitta *.html
+recursive-include nitta *.ico
+recursive-include nitta *.js
+recursive-include nitta *.json
+recursive-include nitta *.md
+recursive-include nitta *.png
+recursive-include nitta *.py
+recursive-include nitta *.svg
+recursive-include nitta *.txt
+recursive-exclude nitta *.pyc
