@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{NT}-{WF}-{type}",
+ "creation": "2023-08-18 14:39:29.108901",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "division",
+  "column_break_yme0u",
+  "department",
+  "column_break_haloc",
+  "role",
+  "column_break_ltju6",
+  "type",
+  "column_break_eg9cq",
+  "transition_rule"
+ ],
+ "fields": [
+  {
+   "fieldname": "division",
+   "fieldtype": "Link",
+   "label": "Division",
+   "options": "Division"
+  },
+  {
+   "fieldname": "column_break_yme0u",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fieldname": "column_break_haloc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "role",
+   "fieldtype": "Link",
+   "label": "Designation",
+   "options": "Designation"
+  },
+  {
+   "fieldname": "column_break_eg9cq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "transition_rule",
+   "fieldtype": "Table",
+   "label": "Transition Rule",
+   "options": "Transition Rule"
+  },
+  {
+   "fieldname": "column_break_ltju6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Link",
+   "label": "Type",
+   "options": "Workflow Type"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-08-18 14:45:52.273622",
+ "modified_by": "Administrator",
+ "module": "NItta Gate Pass",
+ "name": "Nitta Workflow",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

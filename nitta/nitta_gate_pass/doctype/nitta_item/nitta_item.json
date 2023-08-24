@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-08-18 11:52:39.308051",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item",
+  "work_to_be_done",
+  "quantity",
+  "expected_delivery_date"
+ ],
+ "fields": [
+  {
+   "columns": 3,
+   "fieldname": "item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Product"
+  },
+  {
+   "columns": 3,
+   "fieldname": "work_to_be_done",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Work To be done"
+  },
+  {
+   "columns": 3,
+   "fieldname": "expected_delivery_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Expected Delivery Date "
+  },
+  {
+   "columns": 2,
+   "fieldname": "quantity",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Quantity"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-08-24 10:21:29.916377",
+ "modified_by": "Administrator",
+ "module": "NItta Gate Pass",
+ "name": "Nitta item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

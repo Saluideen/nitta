@@ -1,0 +1,214 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_rename": 1,
+ "autoname": "format:{NT}-{RT}-{gate_pass}-{####}",
+ "creation": "2023-08-23 10:25:21.271069",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "from_date",
+  "column_break_yzgum",
+  "gate_pass",
+  "item_state",
+  "vendor_details_section",
+  "vendor_name",
+  "vendor_email",
+  "vendor_contact",
+  "product_details_tab",
+  "product",
+  "way_of_return_tab",
+  "way_of_dispatch",
+  "recipient_details_section",
+  "recipient_name",
+  "column_break_x7vqb",
+  "phone",
+  "driver_details_section",
+  "name1",
+  "column_break_keyy4",
+  "contact_number",
+  "vehicle_details",
+  "registration_number",
+  "workflow_tab",
+  "workflow",
+  "status",
+  "department",
+  "next_approved_by"
+ ],
+ "fields": [
+  {
+   "fieldname": "product_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Product Details"
+  },
+  {
+   "fieldname": "product",
+   "fieldtype": "Table",
+   "label": "Product",
+   "options": "Return product Details"
+  },
+  {
+   "fieldname": "way_of_return_tab",
+   "fieldtype": "Tab Break",
+   "label": "Way Of Return"
+  },
+  {
+   "fieldname": "way_of_dispatch",
+   "fieldtype": "Link",
+   "label": "Way of Dispatch",
+   "options": "Way_of_Dispatch"
+  },
+  {
+   "fieldname": "recipient_details_section",
+   "fieldtype": "Section Break",
+   "label": " Recipient Details"
+  },
+  {
+   "fieldname": "recipient_name",
+   "fieldtype": "Data",
+   "label": "Recipient Name"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone"
+  },
+  {
+   "fieldname": "driver_details_section",
+   "fieldtype": "Section Break",
+   "label": "Driver Details"
+  },
+  {
+   "fieldname": "vehicle_details",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Details"
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "label": "Registration Number"
+  },
+  {
+   "fieldname": "vendor_details_section",
+   "fieldtype": "Section Break",
+   "label": "Vendor Details"
+  },
+  {
+   "fetch_from": "gate_pass.vendor",
+   "fieldname": "vendor_name",
+   "fieldtype": "Link",
+   "label": "Name",
+   "options": "Vendor"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "status"
+  },
+  {
+   "fieldname": "workflow_tab",
+   "fieldtype": "Tab Break",
+   "label": "Workflow"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "column_break_x7vqb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "name1",
+   "fieldtype": "Data",
+   "label": "Name"
+  },
+  {
+   "description": "}",
+   "fieldname": "column_break_keyy4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "label": "Contact Number",
+   "options": "});"
+  },
+  {
+   "fieldname": "gate_pass",
+   "fieldtype": "Link",
+   "label": "Gate Pass",
+   "options": "Nitta Gate Pass"
+  },
+  {
+   "fetch_from": "vendor_name.email",
+   "fieldname": "vendor_email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fetch_from": "vendor_name.vendor_phone",
+   "fieldname": "vendor_contact",
+   "fieldtype": "Data",
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "column_break_yzgum",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "item_state",
+   "fieldtype": "Select",
+   "label": "Item State",
+   "options": "Select\nPartial\nCompleted"
+  },
+  {
+   "fieldname": "workflow",
+   "fieldtype": "Table",
+   "label": "Return Workflow",
+   "options": "Return workflow"
+  },
+  {
+   "fetch_from": "gate_pass.department",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fieldname": "next_approved_by",
+   "fieldtype": "Data",
+   "label": "Next Approved By"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-08-24 11:12:30.340226",
+ "modified_by": "Administrator",
+ "module": "NItta Gate Pass",
+ "name": "Nitta Return Data",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

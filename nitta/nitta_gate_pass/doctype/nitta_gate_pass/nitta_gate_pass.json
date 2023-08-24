@@ -1,0 +1,299 @@
+{
+ "actions": [],
+ "allow_copy": 1,
+ "allow_rename": 1,
+ "autoname": "format:{NT}-{GP}-{#####}",
+ "creation": "2023-08-18 12:05:26.512396",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "from_date",
+  "column_break_ypbv4",
+  "is_emergency",
+  "column_break_es5ht",
+  "vendor",
+  "column_break_tqhx6",
+  "vendor_email",
+  "column_break_cdbdb",
+  "vendor_contact",
+  "section_break_71yrb",
+  "vendor_address",
+  "product_tab",
+  "item",
+  "way_of_dispatch_tab",
+  "way_of_dispatch",
+  "section_break_jzzm8",
+  "recipient",
+  "column_break_sk4ji",
+  "phone",
+  "driver_details",
+  "driver_name",
+  "column_break_waom2",
+  "contact_number",
+  "vehicle_details_section",
+  "registration_number",
+  "workflow_tab",
+  "workflow_name",
+  "workflow",
+  "section_break_umxaa",
+  "return_workflow",
+  "next_approved_by",
+  "status",
+  "section_break_obkha",
+  "department",
+  "division",
+  "user",
+  "role",
+  "return_details_tab",
+  "quantity"
+ ],
+ "fields": [
+  {
+   "fieldname": "vendor",
+   "fieldtype": "Link",
+   "label": "Vendor",
+   "options": "Vendor"
+  },
+  {
+   "fieldname": "way_of_dispatch",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Way of Dispatch",
+   "options": "Way_of_Dispatch"
+  },
+  {
+   "fieldname": "recipient",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Recipient Name"
+  },
+  {
+   "fieldname": "product_tab",
+   "fieldtype": "Section Break",
+   "label": "Product Details"
+  },
+  {
+   "fieldname": "item",
+   "fieldtype": "Table",
+   "label": "Item",
+   "options": "Nitta item"
+  },
+  {
+   "fieldname": "driver_details",
+   "fieldtype": "Section Break",
+   "label": "Driver Details"
+  },
+  {
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Name"
+  },
+  {
+   "fieldname": "column_break_waom2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Phone",
+   "hidden": 1,
+   "label": "Contact Number"
+  },
+  {
+   "fieldname": "vehicle_details_section",
+   "fieldtype": "Section Break",
+   "label": "Vehicle Details"
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Registration Number"
+  },
+  {
+   "fieldname": "column_break_es5ht",
+   "fieldtype": "Section Break",
+   "label": "Vendor Details"
+  },
+  {
+   "fieldname": "column_break_cdbdb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_jzzm8",
+   "fieldtype": "Section Break",
+   "label": "Recipient Details"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "label": "Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_sk4ji",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Phone",
+   "hidden": 1,
+   "label": "Phone"
+  },
+  {
+   "fieldname": "workflow_tab",
+   "fieldtype": "Tab Break",
+   "label": "Workflow"
+  },
+  {
+   "fieldname": "workflow",
+   "fieldtype": "Table",
+   "label": "Workflow Details",
+   "options": "Workflow Details"
+  },
+  {
+   "fieldname": "next_approved_by",
+   "fieldtype": "Link",
+   "label": "Next Approved By",
+   "options": "User"
+  },
+  {
+   "fieldname": "workflow_name",
+   "fieldtype": "Link",
+   "label": "Workflow",
+   "options": "Nitta Workflow"
+  },
+  {
+   "fieldname": "section_break_obkha",
+   "fieldtype": "Section Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fieldname": "division",
+   "fieldtype": "Link",
+   "label": "Division",
+   "options": "Division"
+  },
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "label": "User",
+   "options": "User"
+  },
+  {
+   "fieldname": "role",
+   "fieldtype": "Data",
+   "label": "Role"
+  },
+  {
+   "fieldname": "column_break_tqhx6",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "vendor.email",
+   "fieldname": "vendor_email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "vendor.vendor_phone",
+   "fieldname": "vendor_contact",
+   "fieldtype": "Phone",
+   "label": "Contact Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_71yrb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "vendor.address",
+   "fieldname": "vendor_address",
+   "fieldtype": "Data",
+   "label": "Address",
+   "read_only": 1
+  },
+  {
+   "fieldname": "way_of_dispatch_tab",
+   "fieldtype": "Tab Break",
+   "label": "Way of Dispatch"
+  },
+  {
+   "fieldname": "section_break_umxaa",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "return_workflow",
+   "fieldtype": "Table",
+   "label": "Return workflow",
+   "options": "Return workflow"
+  },
+  {
+   "fieldname": "return_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Return Details"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "column_break_ypbv4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_emergency",
+   "fieldtype": "Check",
+   "label": "Is Emergency"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Nitta Return Data",
+   "link_fieldname": "gate_pass"
+  }
+ ],
+ "modified": "2023-08-24 10:30:42.421488",
+ "modified_by": "Administrator",
+ "module": "NItta Gate Pass",
+ "name": "Nitta Gate Pass",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
