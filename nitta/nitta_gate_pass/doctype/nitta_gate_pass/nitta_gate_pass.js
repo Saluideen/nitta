@@ -47,7 +47,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.change_custom_button_type("Initiate", null, "primary");
     }
 
-	if ((frm.doc.status !== "Draft") && (!roles.includes("Security")) && (frm.doc.status == "Final Approved")) {
+	if ((frm.doc.status !== "Draft") && (!roles.includes("Security")) ) {
 		frm.disable_save();
 		frm.disable_form();
 	}

@@ -16,6 +16,9 @@ from frappe.desk.doctype.notification_log.notification_log import (
 
 
 class NittaReturnData(Document):
+	def validate(self):
+		if self.item_state=="Select":
+			frappe.throw("Select Item Status")
 	def after_insert(self):
 		self.set_workflow()
 		self.save(ignore_permissions=True)
@@ -82,15 +85,11 @@ class NittaReturnData(Document):
 		if self.current_approval_level==self.max_approval_level:
 			self.next_approval_by=None
 			self.status='Final Approved'
-			if(self.item_state=="Completed"):
-				gate_pass=frappe.get_doc("Nitta Gate Pass",self.gate_pass)
-				gate_pass.status="Close"
-				gate_pass.save(ignore_permissions=True)
-			else:
-				gate_pass=frappe.get_doc("Nitta Gate Pass",self.gate_pass)
-				gate_pass.status="Partially Completed"
-				gate_pass.save(ignore_permissions=True)
-
+			# Upadte gate pass status
+			gate_pass=frappe.get_doc("Nitta Gate Pass",self.gate_pass)
+			gate_pass.status=self.item_state
+			gate_pass.db_update()
+			
 
 # Send email to the vendor
     		# vendor_email = self.vendor_email  # Replace with the actual attribute that stores the vendor's email address

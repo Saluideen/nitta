@@ -164,7 +164,7 @@
    "fieldname": "item_state",
    "fieldtype": "Select",
    "label": "Item State",
-   "options": "Select\nPartial\nCompleted"
+   "options": "Select\nNot Completed\nClose"
   },
   {
    "fieldname": "workflow",
@@ -188,7 +188,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-24 11:12:30.340226",
+ "modified": "2023-08-24 11:38:53.887642",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Return Data",
