@@ -17,8 +17,8 @@ frappe.ui.form.on("Nitta Gate Pass", {
 		frm.set_df_property("way_of_dispatch","hidden",0);
 		
 	  }
-
-    //set current user department nd division
+    if(frm.is_new()){
+       //set current user department nd division
     frappe.call({
       method:
         "nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.get_employee_details",
@@ -36,6 +36,9 @@ frappe.ui.form.on("Nitta Gate Pass", {
         frm.refresh_field("user");
       },
     });
+
+    }
+   
     // Initiate only creator.
     if (!frm.is_new() && frm.doc.status == "Draft" && roles.includes("User") ) {
       cur_frm.page.add_action_item("Initiate", function () {
@@ -52,8 +55,24 @@ frappe.ui.form.on("Nitta Gate Pass", {
 		frm.disable_form();
 	}
     
+	if ((frm.doc.status == "Final Approved") && (roles.includes("Security")) ) {
+		frm.disable_save();
+		frm.disable_form();
+	}
+  if ((frm.doc.status == "Close") && (roles.includes("Security")) ) {
+		frm.disable_save();
+		frm.disable_form();
+	}
+  if(roles.includes("Security")){
+        frm.set_df_property("from_date","read_only", 1);
+        frm.set_df_property("is_emergency","read_only", 1);
+        frm.set_df_property("vendor","read_only", 1);
+        frm.set_df_property("item","read_only", 1);
+        frm.set_df_property("workflow","read_only", 1);
 
-    if (frm.doc.next_approved_by == frappe.session.user) {
+  }
+
+    if ((frm.doc.next_approved_by == frappe.session.user) && (frm.doc.status !="Final Approved")&& (frm.doc.status !="Close") &&(frm.doc.status !="Not Completed")) {
       frm.page.add_action_item("Approve", () => {
         let index = frm.doc.workflow.findIndex(
           (el) => el.employee == frappe.session.user && el.status != "Approved"
@@ -88,6 +107,8 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_df_property("driver_name", "hidden", 0);
       frm.set_df_property("contact_number", "hidden", 0);
       frm.set_df_property("registration_number", "hidden", 0);
+      frm.set_df_property("recipient", "hidden", 1);
+      frm.set_df_property("phone", "hidden", 1);
     }
   },
   workflow_type: function (frm) {

@@ -9,10 +9,12 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "column_break_gckn2",
+  "item_state",
+  "section_break_wyuux",
   "from_date",
   "column_break_yzgum",
   "gate_pass",
-  "item_state",
   "vendor_details_section",
   "vendor_name",
   "vendor_email",
@@ -35,12 +37,14 @@
   "workflow",
   "status",
   "department",
-  "next_approved_by"
+  "division",
+  "next_approved_by",
+  "department_store"
  ],
  "fields": [
   {
    "fieldname": "product_details_tab",
-   "fieldtype": "Tab Break",
+   "fieldtype": "Section Break",
    "label": "Product Details"
   },
   {
@@ -57,7 +61,7 @@
   {
    "fieldname": "way_of_dispatch",
    "fieldtype": "Link",
-   "label": "Way of Dispatch",
+   "label": "Way of Return",
    "options": "Way_of_Dispatch"
   },
   {
@@ -106,6 +110,7 @@
    "default": "Draft",
    "fieldname": "status",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "status"
   },
   {
@@ -163,6 +168,7 @@
   {
    "fieldname": "item_state",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Item State",
    "options": "Select\nNot Completed\nClose"
   },
@@ -183,12 +189,31 @@
    "fieldname": "next_approved_by",
    "fieldtype": "Data",
    "label": "Next Approved By"
+  },
+  {
+   "fieldname": "section_break_wyuux",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_gckn2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "division",
+   "fieldtype": "Link",
+   "label": "Division",
+   "options": "Division"
+  },
+  {
+   "fieldname": "department_store",
+   "fieldtype": "Data",
+   "label": "department_store"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-24 11:38:53.887642",
+ "modified": "2023-08-29 22:10:00.619250",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Return Data",

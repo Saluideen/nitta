@@ -135,6 +135,7 @@
    "default": "Draft",
    "fieldname": "status",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Status",
    "read_only": 1
   },
@@ -157,24 +158,26 @@
    "fieldname": "workflow",
    "fieldtype": "Table",
    "label": "Workflow Details",
-   "options": "Workflow Details"
+   "options": "Workflow Details",
+   "read_only": 1
   },
   {
    "fieldname": "next_approved_by",
    "fieldtype": "Link",
    "label": "Next Approved By",
-   "options": "User"
+   "options": "User",
+   "read_only": 1
   },
   {
    "fieldname": "workflow_name",
    "fieldtype": "Link",
    "label": "Workflow",
-   "options": "Nitta Workflow"
+   "options": "Nitta Workflow",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_obkha",
-   "fieldtype": "Section Break",
-   "hidden": 1
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "department",
@@ -241,7 +244,8 @@
    "fieldname": "return_workflow",
    "fieldtype": "Table",
    "label": "Return workflow",
-   "options": "Return workflow"
+   "options": "Return workflow",
+   "read_only": 1
   },
   {
    "fieldname": "return_details_tab",
@@ -273,7 +277,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-08-24 10:30:42.421488",
+ "modified": "2023-08-25 10:39:19.456401",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",
