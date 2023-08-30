@@ -2,7 +2,7 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Nitta Gate Pass Report"] = {
+frappe.query_reports["Nitta Closed Gate Pass Report"] = {
 	"filters": [
 		{
 			"fieldname": "division",
@@ -43,16 +43,6 @@ frappe.query_reports["Nitta Gate Pass Report"] = {
 			"fieldtype": "Date",
 			"reqd": 1,
 			default: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-
-		},
-		{
-			"fieldname": "report_status",
-			"label": __("Status"),
-			"fieldtype": "Link",
-			"options": "Report Status",
-			"reqd": 1,
-			default: 'All'
-
 
 		},
 

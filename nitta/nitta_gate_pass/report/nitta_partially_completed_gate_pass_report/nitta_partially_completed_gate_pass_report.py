@@ -2,7 +2,6 @@
 # For license information, please see license.txt
 
 import frappe
-from datetime import date,datetime,timedelta
 
 
 def execute(filters=None):
@@ -10,7 +9,6 @@ def execute(filters=None):
 	columns=get_column()
 	data =get_data(filters)
 	return columns, data
-
 def get_column():
 	
 	return [
@@ -27,6 +25,11 @@ def get_column():
 	},{
 		"fieldname": "department",
 		"label": "Department",
+		"fieldtype": "Data",	
+		"width": 150
+	},{
+		"fieldname": "vendor",
+		"label": "Vendor",
 		"fieldtype": "Data",	
 		"width": 150
 	},
@@ -55,18 +58,13 @@ def get_column():
 		"fieldtype": "Data",	
 		"width": 150
 	},{
-		"fieldname": "vendor",
-		"label": "Vendor",
-		"fieldtype": "Data",	
-		"width": 150
-	},{
 		"fieldname": "expected_delivery_date",
 		"label": "Expected Delivery Date ",
 		"fieldtype": "Date",	
 		"width": 150
 	},{
-		"fieldname": "status",
-		"label": "Status",
+		"fieldname": "delay",
+		"label": "Delay(In Days)",
 		"fieldtype": "Data",	
 		"width": 150
 	},
@@ -80,40 +78,32 @@ def get_data(filters):
 	data=[]
 
 	department = filters['department']
-	report_status=filters['report_status']
 	division = filters['division']
 	if(division=='All'):
 		division=''
 	if(department=="All"):
 		department=''
-	if(report_status=="All"):
-		report_status=''
+	
 
-	from_date=datetime(2000,1,1,0,0,0)
-	if 'from_date' in filters:
-		from_date=filters["from_date"]
-		from_date = datetime.strptime(from_date,'%Y-%m-%d')
-		from_date = from_date.strftime('%Y-%m-%d')
-		
-	to_date=datetime(2000,1,1,0,0,0)
-	if 'to_date' in filters:
-		to_date=filters["to_date"]
-		to_date = datetime.strptime(to_date,'%Y-%m-%d')
-		to_date = to_date.strftime('%Y-%m-%d')
+	
 
 
 
 	gate_pass_details =frappe.db.sql("""
-		select gate_pass.name,gate_pass.division,gate_pass.department,
-		gate_pass.owner,gate_pass.vendor,gate_pass.status ,item.name1 as item,item.quantity,item.work_to_be_done,item.expected_delivery_date
-		
-		from `tabNitta Gate Pass` gate_pass
-		inner join `tabNitta item` item on gate_pass.name=item.parent  where (gate_pass.from_date BETWEEN %(from_date)s AND %(to_date)s)
+		select gate_pass.name,gate_pass.division,gate_pass.department,gate_pass.owner,gate_pass.vendor,
+		pdt.item,
+		pdt.work_to_be_done,
+		pdt.quantity,
+		pdt.expected_delivery_date,
+		DATEDIFF(CURDATE(), pdt.expected_delivery_date) AS delay
+
+		from `tabNitta Gate Pass`  gate_pass left join `tabNitta item` pdt on gate_pass.name=pdt.parent
+		where gate_pass.status="Final Approved" and pdt.expected_delivery_date<CURDATE()
         AND (gate_pass.department = %(department)s OR %(department)s = '')
         AND (gate_pass.division = %(division)s OR %(division)s = '') 
-		AND (gate_pass.status=%(status)s OR %(status)s='')
 		
-	""",values={'from_date':from_date,'to_date':to_date,'department':department,'division':division,'status':report_status},as_dict=1)
+		
+	""",values={'department':department,'division':division},as_dict=1)
 	
 	for gate_pass in gate_pass_details:
 		data.append({
@@ -122,13 +112,14 @@ def get_data(filters):
 			'gate_pass':gate_pass.name,
 			'initiator':gate_pass.owner,
 			'product':gate_pass.item,
-			'status':gate_pass.status,
 			'quantity':gate_pass.quantity,
 			'work_to_be_done':gate_pass.work_to_be_done,
 			'expected_delivery_date':gate_pass.expected_delivery_date,
 			'vendor':gate_pass.vendor,
+			'delay':gate_pass.delay
 			
 
 		})
 	
 	return data
+

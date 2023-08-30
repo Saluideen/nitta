@@ -249,7 +249,7 @@ def get_gatepass_details(gate_pass):
 	if return_gate_pass:
 		print(return_gate_pass[0]['name'])
 		dispatch_item=frappe.get_all("Return product Details",filters={'parent':return_gate_pass[0]['name']},
-		fields=['item','work_to_be_done','quantity','return_quantity','previous_return_quantity','remaining_quantity','remarks'])
+		fields=['item','work_to_be_done','quantity','return_quantity','previous_return_quantity','remaining_quantity','remarks','expected_delivery_date'])
 	else:
 		dispatch_item=frappe.get_all("Nitta item",filters={'parent':gate_pass},
 		fields=['item','work_to_be_done','expected_delivery_date','quantity'])

@@ -64,11 +64,6 @@ def get_column():
 		"label": "Expected Delivery Date ",
 		"fieldtype": "Date",	
 		"width": 150
-	},{
-		"fieldname": "status",
-		"label": "Status",
-		"fieldtype": "Data",	
-		"width": 150
 	},
 	
 
@@ -80,14 +75,12 @@ def get_data(filters):
 	data=[]
 
 	department = filters['department']
-	report_status=filters['report_status']
 	division = filters['division']
 	if(division=='All'):
 		division=''
 	if(department=="All"):
 		department=''
-	if(report_status=="All"):
-		report_status=''
+	
 
 	from_date=datetime(2000,1,1,0,0,0)
 	if 'from_date' in filters:
@@ -111,9 +104,9 @@ def get_data(filters):
 		inner join `tabNitta item` item on gate_pass.name=item.parent  where (gate_pass.from_date BETWEEN %(from_date)s AND %(to_date)s)
         AND (gate_pass.department = %(department)s OR %(department)s = '')
         AND (gate_pass.division = %(division)s OR %(division)s = '') 
-		AND (gate_pass.status=%(status)s OR %(status)s='')
+		AND (gate_pass.status='Close')
 		
-	""",values={'from_date':from_date,'to_date':to_date,'department':department,'division':division,'status':report_status},as_dict=1)
+	""",values={'from_date':from_date,'to_date':to_date,'department':department,'division':division},as_dict=1)
 	
 	for gate_pass in gate_pass_details:
 		data.append({

@@ -111,7 +111,8 @@ frappe.ui.form.on('Nitta Return Data', {
 							quantity:el.quantity,
 							remaining_quantity:el.remaining_quantity,
 							remarks:el.remarks,
-							previous_return_quantity:el.return_quantity
+							previous_return_quantity:el.return_quantity,
+							expected_delivery_date:el.expected_delivery_date
 							
 						})
 
