@@ -91,7 +91,7 @@ def get_data(filters):
 
 	gate_pass_details =frappe.db.sql("""
 		select gate_pass.name,gate_pass.division,gate_pass.department,gate_pass.owner,gate_pass.vendor,
-		pdt.item,
+		pdt.pdt_name  as item,
 		pdt.work_to_be_done,
 		pdt.quantity,
 		pdt.expected_delivery_date,

@@ -19,7 +19,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-24 10:18:22.452646",
+ "modified": "2023-08-31 12:11:21.740013",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Product",
@@ -43,6 +43,5 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "product_name",
- "translated_doctype": 1
+ "title_field": "product_name"
 }

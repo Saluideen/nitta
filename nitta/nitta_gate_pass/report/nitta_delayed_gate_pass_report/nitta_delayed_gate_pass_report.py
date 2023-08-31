@@ -91,14 +91,14 @@ def get_data(filters):
 
 	gate_pass_details =frappe.db.sql("""
 		select gate_pass.name,gate_pass.division,gate_pass.department,gate_pass.owner,gate_pass.vendor,
-		pdt.item,
+		pdt.pdt_name as item,
 		pdt.work_to_be_done,
 		pdt.quantity,
 		pdt.expected_delivery_date,
 		DATEDIFF(CURDATE(), pdt.expected_delivery_date) AS delay
 
 		from `tabNitta Gate Pass`  gate_pass left join `tabNitta item` pdt on gate_pass.name=pdt.parent
-		where gate_pass.status="Final Approved" and pdt.expected_delivery_date<CURDATE()
+		where gate_pass.status !="Close" and pdt.expected_delivery_date<CURDATE()
         AND (gate_pass.department = %(department)s OR %(department)s = '')
         AND (gate_pass.division = %(division)s OR %(division)s = '') 
 		

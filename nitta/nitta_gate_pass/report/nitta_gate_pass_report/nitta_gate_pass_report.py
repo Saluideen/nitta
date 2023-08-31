@@ -105,13 +105,13 @@ def get_data(filters):
 
 	gate_pass_details =frappe.db.sql("""
 		select gate_pass.name,gate_pass.division,gate_pass.department,
-		gate_pass.owner,gate_pass.vendor,gate_pass.status ,item.name1 as item,item.quantity,item.work_to_be_done,item.expected_delivery_date
+		gate_pass.owner,gate_pass.vendor,gate_pass.status ,item.pdt_name as item,item.quantity,item.work_to_be_done,item.expected_delivery_date
 		
 		from `tabNitta Gate Pass` gate_pass
-		inner join `tabNitta item` item on gate_pass.name=item.parent  where (gate_pass.from_date BETWEEN %(from_date)s AND %(to_date)s)
+		left join `tabNitta item` item on gate_pass.name=item.parent  where (gate_pass.from_date BETWEEN %(from_date)s AND %(to_date)s)
         AND (gate_pass.department = %(department)s OR %(department)s = '')
         AND (gate_pass.division = %(division)s OR %(division)s = '') 
-		AND (gate_pass.status=%(status)s OR %(status)s='')
+		AND (gate_pass.status=%(status)s OR %(status)s='') 
 		
 	""",values={'from_date':from_date,'to_date':to_date,'department':department,'division':division,'status':report_status},as_dict=1)
 	

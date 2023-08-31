@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "item",
+  "pdt_name",
   "work_to_be_done",
   "quantity",
   "expected_delivery_date",
@@ -38,7 +39,7 @@
   {
    "columns": 2,
    "fieldname": "quantity",
-   "fieldtype": "Data",
+   "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Quantity"
   },
@@ -46,13 +47,20 @@
    "fieldname": "image",
    "fieldtype": "Attach Image",
    "label": "Image"
+  },
+  {
+   "fetch_from": "item.product_name",
+   "fieldname": "pdt_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "pdt_name"
   }
  ],
  "image_field": "image",
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-08-24 12:02:25.389276",
+ "modified": "2023-08-31 12:13:51.354918",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta item",

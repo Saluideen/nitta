@@ -98,7 +98,7 @@ def get_data(filters):
 
 	gate_pass_details =frappe.db.sql("""
 		select gate_pass.name,gate_pass.division,gate_pass.department,
-		gate_pass.owner,gate_pass.vendor,gate_pass.status ,item.name1 as item,item.quantity,item.work_to_be_done,item.expected_delivery_date
+		gate_pass.owner,gate_pass.vendor,gate_pass.status ,item.pdt_name as item,item.quantity,item.work_to_be_done,item.expected_delivery_date
 		
 		from `tabNitta Gate Pass` gate_pass
 		inner join `tabNitta item` item on gate_pass.name=item.parent  where (gate_pass.from_date BETWEEN %(from_date)s AND %(to_date)s)
