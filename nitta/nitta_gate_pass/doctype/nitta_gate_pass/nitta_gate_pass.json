@@ -177,7 +177,8 @@
   },
   {
    "fieldname": "section_break_obkha",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "department",
@@ -277,7 +278,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-08-25 10:39:19.456401",
+ "modified": "2023-09-01 10:04:12.850956",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",

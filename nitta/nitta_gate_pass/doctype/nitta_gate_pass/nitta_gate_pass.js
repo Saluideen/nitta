@@ -18,7 +18,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
 		
 	  }
     if(frm.is_new()){
-       //set current user department nd division
+       //set initiator  department nd division
     frappe.call({
       method:
         "nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.get_employee_details",
@@ -36,6 +36,11 @@ frappe.ui.form.on("Nitta Gate Pass", {
         frm.refresh_field("user");
       },
     });
+    frm.set_df_property("workflow_name", "hidden", 1);
+    frm.set_df_property("workflow", "hidden", 1);
+    frm.set_df_property("next_approved_by", "hidden", 1);
+    frm.set_df_property("status", "hidden", 1);
+   
 
     }
    
