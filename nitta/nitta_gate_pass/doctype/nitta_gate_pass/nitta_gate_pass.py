@@ -29,14 +29,19 @@ class NittaGatePass(Document):
 		
 		if not self.status=="Draft" and not self.status=="Close":
 			self.update_workflow()
+			
 			employee_email=self.user
 			add_share(self.doctype, self.name, user=self.next_approved_by, read=1, write=1, submit=0, share=1, everyone=0, notify=0)
-			notify_assignment(self.next_approved_by,'Nitta Gate Pass',self.name,self.status)
+			if self.is_emergency:
+				notify_emergency(self.next_approved_by,"Nitta Gate Pass",self.name,self.status)
+			else:
+				notify_assignment(self.next_approved_by,'Nitta Gate Pass',self.name,self.status)
 
 
 		self.reload()
 	
 	def set_workflow(self):
+		emergency_dispatch_reminder()
 		if self.is_emergency:
 			self.workflow_type="Emergency Dispatch"
 		else:
@@ -154,7 +159,6 @@ class NittaGatePass(Document):
 				if current_user_index>0:
 					self.update_updated_date(current_user_index)
 		elif self.current_approval_level==self.max_approval_level:
-			frappe.throw("ifelif")
 			self.next_approval_by=None
 			self.status='Final Approved'
 			if current_user_index>0:
@@ -188,6 +192,7 @@ def get_workflow_transition(workflow_name,department,division):
 
 def notify_assignment(shared_by, doctype, doc_name,status):
 
+
 	if not (shared_by and doctype and doc_name) :
 		return
 
@@ -211,7 +216,30 @@ def notify_assignment(shared_by, doctype, doc_name,status):
 	
 	enqueue_create_notification(shared_by, notification_doc)
 
+def notify_emergency(shared_by, doctype, doc_name,status):
 
+	if not (shared_by and doctype and doc_name) :
+		return
+
+	from frappe.utils import get_fullname
+
+	title = get_title(doctype, doc_name)
+
+	reference_user = get_fullname(frappe.session.user)
+	notification_message = _("{0} shared a document {1} {2} for Emergency Dispatch ").format(
+		frappe.bold(reference_user), frappe.bold(_(doctype)), get_title_html(title)
+	)
+
+	notification_doc = {
+		"type": "Share",
+		"document_type": doctype,
+		"subject": notification_message,
+		"document_name": doc_name,
+		"from_user": frappe.session.user,
+		
+	}
+	
+	enqueue_create_notification(shared_by, notification_doc)
 def notify_Initiator(shared_by,doctype,doc_name):
 	if not (shared_by and doctype and doc_name) :
 		return
@@ -243,3 +271,42 @@ def notify_Initiator(shared_by,doctype,doc_name):
 def get_employee_details(name):
 	return frappe.db.sql("""SELECT division,department,name,roles,user FROM `tabEmployee` 
 	WHERE  email=%(name)s""",values={'name':name},as_dict=1)
+
+
+# send reminder for emergency dispatch approval
+@frappe.whitelist()
+def emergency_dispatch_reminder():
+	emergency_gate_pass=frappe.db.sql(""" select gatepass.name,gatepass.user,gatepass.next_approved_by,workflow.status from   `tabNitta Gate Pass` gatepass inner join
+ `tabWorkflow Details` workflow on gatepass.name=workflow.parent and gatepass.next_approved_by=workflow.employee where gatepass.is_emergency='1' and workflow.status='Pending';""",as_dict=1)
+	
+	for gate_pass in emergency_gate_pass:
+		
+		send_notification(gate_pass['name'],gate_pass['user'],gate_pass['next_approved_by'],'Nitta Gate Pass')
+
+def send_notification(gate_pass,user,next_approved_by,doctype):
+	
+
+	if not (user and doctype and gate_pass) :
+		return
+
+	from frappe.utils import get_fullname
+
+	title = get_title(doctype, gate_pass)
+	
+
+	reference_user = get_fullname(user)
+	notification_message = _("Material Dispatched with {0} {1} pls aapprove ").format(
+		 frappe.bold(_(doctype)), get_title_html(title)
+	)
+
+	notification_doc = {
+		"type": "Share",
+		"document_type": doctype,
+		"subject": notification_message,
+		"document_name": gate_pass,
+		"from_user": user,
+		
+	}
+	
+	enqueue_create_notification(next_approved_by, notification_doc)
+	

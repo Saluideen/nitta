@@ -88,7 +88,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
         frm.save();
       });
 
-      if (frm.doc.status == "Initiated") {
+      if ((frm.doc.status == "Initiated")&& (!(frm.doc.is_emergency))) {
         frm.page.add_action_item("Reject", () => {
           let index = frm.doc.workflow.findIndex(
             (el) =>

@@ -129,13 +129,18 @@ app_license = "m"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 #	"all": [
 #		"nitta.tasks.all"
 #	],
-#	"daily": [
-#		"nitta.tasks.daily"
-#	],
+# "cron": {
+# 		"1-59 * * * *": [
+# 			"nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.emergency_dispatch_reminder"
+# 		]
+# 	},
+	"daily": [
+		"nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.emergency_dispatch_reminder"
+	],
 #	"hourly": [
 #		"nitta.tasks.hourly"
 #	],
@@ -145,7 +150,7 @@ app_license = "m"
 #	"monthly": [
 #		"nitta.tasks.monthly"
 #	],
-# }
+}
 
 # Testing
 # -------
