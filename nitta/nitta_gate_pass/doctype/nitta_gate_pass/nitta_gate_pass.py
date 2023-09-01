@@ -87,6 +87,7 @@ class NittaGatePass(Document):
 	
 
 	def update_workflow(self):
+		
 		self.current_approval_level=0
 		self.max_approval_level=0
 		self.status="Initiated"
@@ -99,20 +100,36 @@ class NittaGatePass(Document):
 				self.current_approval_level+=1
 			if approval.status=='Rejected':
 				self.rejected=True
+				self.current_approval_level+=1
 			if approval.employee ==frappe.session.user and approval.status!='Pending':
 				current_user_index=index
 
 		if self.current_approval_level==self.max_approval_level:
+			
 			self.next_approval_by=None
 			self.status='Final Approved'
+			frappe.sendmail(recipients=self.user, subject="Update regarding ",content="content")
+			notify_Initiator(self.user,"Nitta Gate Pass",self.name)
 			if current_user_index>0:
 				self.update_updated_date(current_user_index)
 			
 		elif self.current_approval_level==0:
 			
-			self.next_approved_by=self.workflow[self.current_approval_level].employee
+
+			if self.rejected:
+				# frappe.throw(self.rejected)
+				approval_flow = self.workflow[self.current_approval_level]
+				self.status='Level '+str(self.current_approval_level+1)+'('+approval_flow.department+'-' +approval_flow.role +')'+' Rejected'
+
+				if current_user_index>0:
+					self.update_updated_date(current_user_index)
+			else:
+			
+			
+				self.next_approved_by=self.workflow[self.current_approval_level].employee
 			
 		elif self.current_approval_level<self.max_approval_level:
+			
 			self.next_approved_by=self.workflow[self.current_approval_level].employee
 			if not self.rejected :
 				self.update_assigned_date(self.current_approval_level+1)
@@ -128,13 +145,16 @@ class NittaGatePass(Document):
 				if current_user_index>0:
 					self.update_updated_date(current_user_index)	
 			else:
-				# self.status='Level '+str(self.current_approval_level+1)+' Rejected'
+				
+				
+				# 'Level '+str(self.current_approval_level+1)+'('+approvaself.status='Level '+str(self.current_approval_level+1)+' Rejected'
 				approval_flow = self.workflow[self.current_approval_level]
-				self.status='Level '+str(self.current_approval_level+1)+'('+approval_flow.department+'-' +approval_flow.role +')'+' Rejected'
-
+				# self.status=l_flow.department+'-' +approval_flow.role +')'+' Rejected'
+				self.status="Rejected"
 				if current_user_index>0:
 					self.update_updated_date(current_user_index)
 		elif self.current_approval_level==self.max_approval_level:
+			frappe.throw("ifelif")
 			self.next_approval_by=None
 			self.status='Final Approved'
 			if current_user_index>0:
@@ -190,6 +210,32 @@ def notify_assignment(shared_by, doctype, doc_name,status):
 	}
 	
 	enqueue_create_notification(shared_by, notification_doc)
+
+
+def notify_Initiator(shared_by,doctype,doc_name):
+	if not (shared_by and doctype and doc_name) :
+		return
+
+	from frappe.utils import get_fullname
+
+	title = get_title(doctype, doc_name)
+
+	reference_user = get_fullname(frappe.session.user)
+	notification_message = _("Material Dispatched with {0} {1} ").format(
+		 frappe.bold(_(doctype)), get_title_html(title)
+	)
+
+	notification_doc = {
+		"type": "Share",
+		"document_type": doctype,
+		"subject": notification_message,
+		"document_name": doc_name,
+		"from_user": frappe.session.user,
+		
+	}
+	
+	enqueue_create_notification(shared_by, notification_doc)
+	
 
 
 

@@ -56,7 +56,7 @@ frappe.ui.form.on('Nitta Return Data', {
 			frm.set_df_property("product", "read_only", 1);
 		}
 		
-		if ((frm.doc.next_approved_by == frappe.session.user)) {
+		if ((frm.doc.next_approved_by == frappe.session.user) && (frm.doc.status !="Final Approved")) {
 			// if((frm.doc.status !="Final Approved")){
 				frm.page.add_action_item('Approve', () => {
 				
@@ -96,15 +96,15 @@ frappe.ui.form.on('Nitta Return Data', {
 				console.log(r.message[1]);
 				
 				r.message[0].forEach(el => {
-					let found = false
-					if (frm.doc.product) {
-						found = frm.doc.product.find(function (record) {
-							if (record.item == el.item)
-								return true;
-						});
-					}
+					// let found = false
+					// if (frm.doc.product) {
+					// 	found = frm.doc.product.find(function (record) {
+					// 		if (record.item == el.item)
+					// 			return true;
+					// 	});
+					// }
 
-					if (!found) {
+					// if (!found) {
 						frm.add_child('product', {
 							item: el.item,
 							work_to_be_done: el.work_to_be_done,
@@ -117,7 +117,7 @@ frappe.ui.form.on('Nitta Return Data', {
 						})
 
 						frm.refresh_field('product')
-					}
+					// }
 				});
 				r.message[1].forEach(el =>{
 					
@@ -135,8 +135,8 @@ frappe.ui.form.on('Return product Details', {
 
     return_quantity: function (frm, cdt, cdn) {
         var row = locals[cdt][cdn];
-		let remains=row.return_quantity+row.previous_return_quantity;
-        let remaining_quantity = row.quantity-remains
+		let remains=(parseFloat(row.return_quantity)||0)+(parseFloat(row.previous_return_quantity)||0);
+        let remaining_quantity = parseFloat(row.quantity)-parseFloat(remains)
         frappe.model.set_value(cdt, cdn, 'remaining_quantity', remaining_quantity);
     }
 });
