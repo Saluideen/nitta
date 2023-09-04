@@ -129,6 +129,7 @@ class NittaReturnData(Document):
 
 
 	def update_workflow(self):
+		delay_reminder()
 		self.current_approval_level=0
 		self.max_approval_level=0
 		self.status="Initiated"
@@ -258,7 +259,102 @@ def get_gatepass_details(gate_pass):
 
 @frappe.whitelist()
 def get_employee_details(name):
-	print(name)
 	employee_details=frappe.db.sql("""select * from `tabEmployee` where user=%(name)s""",
 	values={'name':name},as_dict=1)
 	return employee_details
+
+
+# scheduler for delay mail
+
+def delay_reminder():
+	
+	delayed_gate_pass=frappe.db.sql("""select gate_pass.name,gate_pass.division,gate_pass.department,
+	gate_pass.owner,gate_pass.vendor,gate_pass.vendor_email,
+		pdt.pdt_name as item,
+		pdt.work_to_be_done,
+		pdt.expected_delivery_date,
+		DATEDIFF(CURDATE(), pdt.expected_delivery_date) AS delay
+		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
+        
+        
+		where gate_pass.status !="Close" and DATEDIFF(CURDATE(), pdt.expected_delivery_date)='92' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='182' or
+		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='366' """,as_dict=1)
+	# Create a dictionary to group items based on vendor_email
+	vendor_items = {}
+
+	# Iterate through the delayed_gate_pass results
+	for gate_pass_info in delayed_gate_pass:
+		vendor_email = gate_pass_info["vendor_email"]
+		item_info = {
+			"gatepass":gate_pass_info["name"],
+			"item": gate_pass_info["item"],
+			"work_to_be_done": gate_pass_info["work_to_be_done"],
+			"expected_delivery_date": gate_pass_info["expected_delivery_date"],
+			"delay": gate_pass_info["delay"]
+		}
+
+		# Check if the vendor_email already exists in the vendor_items dictionary
+		if vendor_email in vendor_items:
+			# If it exists, append the item info to the existing list of items
+			vendor_items[vendor_email].append(item_info)
+		else:
+			# If it doesn't exist, create a new entry in the dictionary
+			vendor_items[vendor_email] = [item_info]
+	subject = "Delayed Gate Pass Information"
+	message_template = """
+		<html>
+		
+		
+		<body>
+			<p>Dear Vendor,</p>
+
+			<p>Here is the list of delayed gate passes and their associated items:</p>
+
+			<p>Vendor Email: {vendor_email}</p>
+
+			<table style="width:100%;border-collapse: collapse;border: 2px solid black;">
+				<tr style="border: 1px solid black;padding: 8px; text-align: left;">
+				<th>Gate Pass</th>
+					<th>Item</th>
+					<th>Work to be Done</th>
+					<th>Expected Delivery Date</th>
+					<th>Delay (days)</th>
+				</tr>
+				{items}
+			</table>
+
+			<p>Thank you.</p>
+
+			<p>Sincerely,<br>Nitta</p>
+		</body>
+		</html>
+		"""
+	# Iterate through the 'vendor_items' dictionary and send emails
+	for vendor_email, items_list in vendor_items.items():
+		# Prepare the message for the email
+		items_table = ""
+		for item_info in items_list:
+			items_table += f"<tr>"
+			items_table += f"<td>{item_info['gatepass']}</td>"
+			items_table += f"<td>{item_info['item']}</td>"
+			items_table += f"<td>{item_info['work_to_be_done']}</td>"
+			items_table += f"<td>{item_info['expected_delivery_date']}</td>"
+			items_table += f"<td>{item_info['delay']} days</td>"
+			items_table += f"</tr>"
+
+		message = message_template.format(
+			vendor_email=vendor_email,
+			items=items_table
+		)
+		# Send the email
+		frappe.sendmail(
+			recipients=vendor_email,
+			subject=subject,
+			message=message,
+			
+		)
+	
+
+	
+
+

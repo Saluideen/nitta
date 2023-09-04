@@ -147,9 +147,9 @@ scheduler_events = {
 #	"weekly": [
 #		"nitta.tasks.weekly"
 #	],
-#	"monthly": [
-#		"nitta.tasks.monthly"
-#	],
+	"monthly": [
+		"nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.delay_reminder"
+	],
 }
 
 # Testing
