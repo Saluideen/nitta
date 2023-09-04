@@ -12,7 +12,7 @@ frappe.ui.form.on('Nitta Return Data', {
 				'name': frappe.session.user
 			},
 			callback: function (r) {
-				console.log("r.message[0].department",r.message[0].department);
+				
 				frm.set_value('department_store', r.message[0].department);
 				
 				
@@ -79,7 +79,7 @@ frappe.ui.form.on('Nitta Return Data', {
 		frm.set_query('gate_pass', function () {
 			return {
 				// query: "nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.get_gate_pass",
-				filters: { 'status':['in', ['Final Approved', 'Not Completed']] }
+				filters: { 'status':['in', ['Dispatched', 'Partially Completed']] }
 				
 			};
 		});

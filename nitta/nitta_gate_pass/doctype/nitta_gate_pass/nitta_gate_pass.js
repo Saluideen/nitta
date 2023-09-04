@@ -3,6 +3,23 @@
 
 frappe.ui.form.on("Nitta Gate Pass", {
   refresh: function (frm) {
+
+
+    frappe.call({
+			method: "nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.get_employee_details",
+			async: false,
+			args: {
+				'name': frappe.session.user
+			},
+			callback: function (r) {
+				
+				frm.set_value('current_department', r.message[0].department);
+				
+				
+			
+			}
+		});
+
 	$(".btn.btn-new.btn-secondary.btn-xs.icon-btn").hide();
     // Check if the date field is empty before setting the current date
     if (!frm.doc.from_date) {
@@ -60,7 +77,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
 		frm.disable_form();
 	}
     
-	if ((frm.doc.status == "Final Approved") && (roles.includes("Security")) ) {
+	if ((frm.doc.status == "Dispatched") && (roles.includes("Security")) ) {
 		frm.disable_save();
 		frm.disable_form();
 	}
@@ -77,7 +94,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
 
   }
 
-    if ((frm.doc.next_approved_by == frappe.session.user) && (frm.doc.status !="Final Approved")&& (frm.doc.status !="Close") &&(frm.doc.status !="Not Completed")) {
+    if ((frm.doc.next_approved_by == frappe.session.user) && (frm.doc.status !="Dispatched")&& (frm.doc.status !="Close") &&(frm.doc.status !="Not Completed")) {
       frm.page.add_action_item("Approve", () => {
         let index = frm.doc.workflow.findIndex(
           (el) => el.employee == frappe.session.user && el.status != "Approved"
@@ -116,18 +133,18 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_df_property("phone", "hidden", 1);
     }
   },
-  workflow_type: function (frm) {
-    console.log("workflow_type", frm.doc.workflow_type);
-    if (frm.doc.workflow_type == "Arrival") {
-      frm.set_df_property("quantity", "hidden", 0);
-      frm.add_custom_button("Return", function () {
-        frm.doc.status = "Return";
-        frm.refresh_field("status");
-        frm.dirty();
-        frm.save();
-        // frappe.msgprint("Schedule Cancelled")
-      });
-      frm.change_custom_button_type("Return", null, "primary");
-    }
-  },
+  // workflow_type: function (frm) {
+  //   console.log("workflow_type", frm.doc.workflow_type);
+  //   if (frm.doc.workflow_type == "Arrival") {
+  //     frm.set_df_property("quantity", "hidden", 0);
+  //     frm.add_custom_button("Return", function () {
+  //       frm.doc.status = "Return";
+  //       frm.refresh_field("status");
+  //       frm.dirty();
+  //       frm.save();
+  //       // frappe.msgprint("Schedule Cancelled")
+  //     });
+  //     frm.change_custom_button_type("Return", null, "primary");
+  //   }
+  // },
 });

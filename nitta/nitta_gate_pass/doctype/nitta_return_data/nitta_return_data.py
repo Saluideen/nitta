@@ -36,7 +36,7 @@ class NittaReturnData(Document):
 					frappe.throw("Item return quantity is greater than quantity")
 
 		#validation for way of Return
-		if self.way_of_dispatch is None and self.department_store=="Security":
+		if self.way_of_return is None and self.department_store=="Security":
 			frappe.throw("Please Select Way of Return")
 
 		
@@ -314,7 +314,7 @@ def delay_reminder():
 
 			<table style="width:100%;border-collapse: collapse;border: 2px solid black;">
 				<tr style="border: 1px solid black;padding: 8px; text-align: left;">
-				<th>Gate Pass</th>
+				<a href={gatepass_link}<th>Gate Pass</th></a>
 					<th>Item</th>
 					<th>Work to be Done</th>
 					<th>Expected Delivery Date</th>
@@ -343,6 +343,8 @@ def delay_reminder():
 			items_table += f"</tr>"
 
 		message = message_template.format(
+			gatepass_link=get_url_to_form('Nitta Gate Pass',self.name),
+			
 			vendor_email=vendor_email,
 			items=items_table
 		)

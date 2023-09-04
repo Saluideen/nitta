@@ -47,7 +47,8 @@
   "user",
   "role",
   "return_details_tab",
-  "quantity"
+  "quantity",
+  "current_department"
  ],
  "fields": [
   {
@@ -268,6 +269,12 @@
    "fieldname": "is_emergency",
    "fieldtype": "Check",
    "label": "Is Emergency"
+  },
+  {
+   "fieldname": "current_department",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Current Department"
   }
  ],
  "hide_toolbar": 1,
@@ -278,7 +285,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-09-01 10:04:12.850956",
+ "modified": "2023-09-04 10:21:06.212411",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",

@@ -7,6 +7,7 @@ from datetime import date,datetime
 from frappe.utils import get_url_to_form
 from frappe.desk.notifications import enqueue_create_notification
 from frappe.share import add as add_share
+from frappe.utils import get_url_to_form
 from frappe import _
 from frappe.desk.doctype.notification_log.notification_log import (
 	enqueue_create_notification,
@@ -16,12 +17,16 @@ from frappe.desk.doctype.notification_log.notification_log import (
 
 
 class NittaGatePass(Document):
-	# pass
+	def validate(self):
+		#validation for way of Dispatch
+		if self.way_of_dispatch is None and self.current_department=="Security":
+			frappe.throw("Please Select Way of Dispatch")
+	
 	def after_insert(self):
 		self.doc_name=self.name
 		self.set_workflow()
 		self.save(ignore_permissions=True)
-	# pass
+	
 	def on_update(self):
 		if self.status=='Initiated':
 			self.update_assigned_date(1)
@@ -74,7 +79,7 @@ class NittaGatePass(Document):
 		approval_flow=frappe.get_all("Workflow Details",filters={'parent':self.name,'parenttype':self.doctype,'idx':index})
 		if len(approval_flow)>0:
 			approval=frappe.get_doc("Workflow Details",approval_flow[0].name)
-			approval.assigned_date=date.today()
+			approval.assigned_date=datetime.now()
 			approval.save()
 		else:
 			frappe.throw("Assign Approval flow")
@@ -112,8 +117,38 @@ class NittaGatePass(Document):
 		if self.current_approval_level==self.max_approval_level:
 			
 			self.next_approval_by=None
-			self.status='Final Approved'
-			frappe.sendmail(recipients=self.user, subject="Update regarding ",content="content")
+			self.status='Dispatched'
+			
+			message_template="""
+			<html>
+			
+			
+			<body>
+				<p>Dear {vendor},</p>
+
+				<p>Vendor Email: {vendor_email}</p>
+				<p>Material Dispatched with Gate Pass </p>
+				{gatepass}
+				<br>
+
+				<a href={gatepass_link}>
+				<button style="display: inline-block;padding: 10px 20px;padding: 10px 20px;background-color: #007BFF;color: #ffffff;
+				border-radius: 5px;">GatePass<button></a>
+
+				<p>Thank you.</p>
+
+				<p>Sincerely,<br>Nitta</p>
+			</body>
+			</html>
+			"""
+			message = message_template.format(
+			vendor=self.vendor,
+			vendor_email=self.vendor_email,
+			gatepass=self.name,
+			gatepass_link=get_url_to_form('Nitta Gate Pass',self.name)
+			)
+			
+			frappe.sendmail(recipients=self.vendor_email,subject="Material Dispatched",message=message)
 			notify_Initiator(self.user,"Nitta Gate Pass",self.name)
 			if current_user_index>0:
 				self.update_updated_date(current_user_index)
@@ -160,7 +195,7 @@ class NittaGatePass(Document):
 					self.update_updated_date(current_user_index)
 		elif self.current_approval_level==self.max_approval_level:
 			self.next_approval_by=None
-			self.status='Final Approved'
+			self.status='Dispatched'
 			if current_user_index>0:
 				self.update_updated_date(current_user_index)
 			
