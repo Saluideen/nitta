@@ -86,6 +86,20 @@ frappe.ui.form.on('Nitta Return Data', {
 		
 
 	},
+	way_of_return: function (frm) {
+		frm.refresh();
+		let way_of_dispatch = frm.doc.way_of_return;
+		if (way_of_dispatch == "By Hand") {
+		  frm.set_df_property("recipient_name", "hidden", 0);
+		  frm.set_df_property("phone", "hidden", 0);
+		} else if (way_of_dispatch == "Vehicle") {
+		  frm.set_df_property("driver_name", "hidden", 0);
+		  frm.set_df_property("contact_number", "hidden", 0);
+		  frm.set_df_property("registration_number", "hidden", 0);
+		  frm.set_df_property("recipient", "hidden", 1);
+		  frm.set_df_property("phone", "hidden", 1);
+		}
+	  },
 	gate_pass:function(frm){
 		frappe.call({
 			method: "nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.get_gatepass_details",

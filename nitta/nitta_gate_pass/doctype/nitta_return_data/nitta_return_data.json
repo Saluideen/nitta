@@ -22,13 +22,13 @@
   "product_details_tab",
   "product",
   "way_of_return_tab",
-  "way_of_dispatch",
+  "way_of_return",
   "recipient_details_section",
   "recipient_name",
   "column_break_x7vqb",
   "phone",
   "driver_details_section",
-  "name1",
+  "driver_name",
   "column_break_keyy4",
   "contact_number",
   "vehicle_details",
@@ -59,12 +59,6 @@
    "label": "Way Of Return"
   },
   {
-   "fieldname": "way_of_dispatch",
-   "fieldtype": "Link",
-   "label": "Way of Return",
-   "options": "Way_of_Dispatch"
-  },
-  {
    "fieldname": "recipient_details_section",
    "fieldtype": "Section Break",
    "label": " Recipient Details"
@@ -72,11 +66,13 @@
   {
    "fieldname": "recipient_name",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Recipient Name"
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Phone"
   },
   {
@@ -92,6 +88,7 @@
   {
    "fieldname": "registration_number",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Registration Number"
   },
   {
@@ -128,11 +125,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "name1",
-   "fieldtype": "Data",
-   "label": "Name"
-  },
-  {
    "description": "}",
    "fieldname": "column_break_keyy4",
    "fieldtype": "Column Break"
@@ -140,6 +132,7 @@
   {
    "fieldname": "contact_number",
    "fieldtype": "Phone",
+   "hidden": 1,
    "label": "Contact Number",
    "options": "});"
   },
@@ -208,12 +201,24 @@
    "fieldname": "department_store",
    "fieldtype": "Data",
    "label": "department_store"
+  },
+  {
+   "fieldname": "way_of_return",
+   "fieldtype": "Link",
+   "label": "Way of Return",
+   "options": "Way_of_Dispatch"
+  },
+  {
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Name"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-31 11:05:00.381712",
+ "modified": "2023-09-04 10:02:30.981398",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Return Data",
