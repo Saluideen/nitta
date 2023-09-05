@@ -345,3 +345,14 @@ def send_notification(gate_pass,user,next_approved_by,doctype):
 	
 	enqueue_create_notification(next_approved_by, notification_doc)
 	
+@frappe.whitelist()
+def update_gatepass(gate_pass,item,quantity):
+		# item=frappe.db.sql("""select remaining from `tabNitta item` where parent=%(gatepass)s 
+		# and name=%(name)s """,
+		# values={'gatepass':gate_pass,'name':item},as_dict=1)
+		# if item:
+		# 	print(item[0]['remaining'])
+	doc = frappe.get_doc('Nitta item', item)
+	doc.remaining =int(doc.remaining)-int(quantity)
+	doc.save()
+

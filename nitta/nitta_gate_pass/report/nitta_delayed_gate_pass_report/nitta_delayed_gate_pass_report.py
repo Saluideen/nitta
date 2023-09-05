@@ -53,6 +53,12 @@ def get_column():
 		"width": 150
 	},
 	{
+		"fieldname": "remaining",
+		"label": "Remaining Quantity",
+		"fieldtype": "Data",	
+		"width": 150
+	},
+	{
 		"fieldname": "work_to_be_done",
 		"label": "Work To be done",
 		"fieldtype": "Data",	
@@ -94,10 +100,11 @@ def get_data(filters):
 		pdt.pdt_name as item,
 		pdt.work_to_be_done,
 		pdt.quantity,
+		pdt.remaining,
 		pdt.expected_delivery_date,
 		DATEDIFF(CURDATE(), pdt.expected_delivery_date) AS delay
 
-		from `tabNitta Gate Pass`  gate_pass left join `tabNitta item` pdt on gate_pass.name=pdt.parent
+		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
 		where gate_pass.status !="Close" and pdt.expected_delivery_date<CURDATE()
         AND (gate_pass.department = %(department)s OR %(department)s = '')
         AND (gate_pass.division = %(division)s OR %(division)s = '') 
@@ -116,7 +123,8 @@ def get_data(filters):
 			'work_to_be_done':gate_pass.work_to_be_done,
 			'expected_delivery_date':gate_pass.expected_delivery_date,
 			'vendor':gate_pass.vendor,
-			'delay':gate_pass.delay
+			'delay':gate_pass.delay,
+			'remaining':gate_pass.remaining
 			
 
 		})

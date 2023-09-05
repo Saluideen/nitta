@@ -46,6 +46,43 @@ class NittaReturnData(Document):
 		self.save(ignore_permissions=True)
 	
 	def on_update(self):
+		# last_update=self.get_doc_before_save()
+		# for product in last_update.product:
+		# 	for p in self.product:
+		# 		if p.return_quantity is None:
+		# 			p.return_quantity=0
+		# 		if(p.name == product.name and p.remaining_quantity != product.remaining_quantity):
+		# 			doc = frappe.get_doc('Nitta item', p.item_name)
+		# 			doc.remaining =float(product.remaining_quantity) - float(p.return_quantity)
+		# 			doc.db_update()
+		# 		else:
+		# 			doc = frappe.get_doc('Nitta item',p.item_name)
+		# 			doc.remaining =p.remaining_quantity
+		# 			doc.db_update()
+
+
+					
+			# print(product.remaining_quantity)
+
+		# Update gatepass remaining quantity aganist return quantity
+		# for item in self.product:
+		# 	last_update=self.get_doc_before_save()
+		# 	print('last_update',last_update)
+			
+			# # last_update = frappe.get_last_doc('Nitta item', filters={"name": item.item_name})
+			# doc = frappe.get_doc('Nitta item', item.item_name)
+			# print("last_update",last_update.remaining,"item.return_quantity",item.return_quantity)
+			# if item.return_quantity is None:
+			# 	item.return_quantity = 0
+			# if last_update:
+			# 	remains=float(str(last_update.remaining) or "0") - float(str(item.return_quantity) or "0")
+			# 	if remains == item.remaining_quantity:
+			# 		doc.remaining =item.remaining_quantity
+			# 		doc.save()
+			# else:
+			# 	doc.remaining=remains
+			# 	doc.save()
+
 		if self.status=='Initiated':
 			self.update_assigned_date(1)
 		if not self.status=="Draft":
@@ -241,19 +278,19 @@ def get_gatepass_details(gate_pass):
 	values={"name":gate_pass},as_dict=1)
 
 	# check if  return document aganist gatepass
-	return_gate_pass = frappe.get_all("Nitta Return Data", 
-                                   filters={'gate_pass': gate_pass},
-								   fields=['name'],
-                                   order_by='creation desc',
-                                   limit=1)
+	# return_gate_pass = frappe.get_all("Nitta Return Data", 
+    #                                filters={'gate_pass': gate_pass},
+	# 							   fields=['name'],
+    #                                order_by='creation desc',
+    #                                limit=1)
 
-	if return_gate_pass:
-		print(return_gate_pass[0]['name'])
-		dispatch_item=frappe.get_all("Return product Details",filters={'parent':return_gate_pass[0]['name']},
-		fields=['item','work_to_be_done','quantity','return_quantity','previous_return_quantity','remaining_quantity','remarks','expected_delivery_date'])
-	else:
-		dispatch_item=frappe.get_all("Nitta item",filters={'parent':gate_pass},
-		fields=['item','work_to_be_done','expected_delivery_date','quantity'])
+	# if return_gate_pass:
+	# 	print(return_gate_pass[0]['name'])
+	# 	dispatch_item=frappe.get_all("Return product Details",filters={'parent':return_gate_pass[0]['name']},
+	# 	fields=['item','work_to_be_done','quantity','return_quantity','previous_return_quantity','remaining_quantity','remarks','expected_delivery_date'])
+	# else:
+	dispatch_item=frappe.get_all("Nitta item",filters={'parent':gate_pass},
+	fields=['item','work_to_be_done','expected_delivery_date','quantity','remaining','name'])
 
 	return dispatch_item,gate_pass_details
 
@@ -272,6 +309,8 @@ def delay_reminder():
 	gate_pass.owner,gate_pass.vendor,gate_pass.vendor_email,
 		pdt.pdt_name as item,
 		pdt.work_to_be_done,
+		pdt.quantity,
+		pdt.remaining,
 		pdt.expected_delivery_date,
 		DATEDIFF(CURDATE(), pdt.expected_delivery_date) AS delay
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
@@ -289,6 +328,8 @@ def delay_reminder():
 			"gatepass":gate_pass_info["name"],
 			"item": gate_pass_info["item"],
 			"work_to_be_done": gate_pass_info["work_to_be_done"],
+			"quantity":gate_pass_info["quantity"],
+			"remaining":gate_pass_info["remaining"],
 			"expected_delivery_date": gate_pass_info["expected_delivery_date"],
 			"delay": gate_pass_info["delay"]
 		}
@@ -317,6 +358,8 @@ def delay_reminder():
 				<a href={gatepass_link}<th>Gate Pass</th></a>
 					<th>Item</th>
 					<th>Work to be Done</th>
+					<th>Quantity</th>
+					<th>Remaining Quantity</th>
 					<th>Expected Delivery Date</th>
 					<th>Delay (days)</th>
 				</tr>
@@ -338,6 +381,8 @@ def delay_reminder():
 			items_table += f"<td>{item_info['gatepass']}</td>"
 			items_table += f"<td>{item_info['item']}</td>"
 			items_table += f"<td>{item_info['work_to_be_done']}</td>"
+			items_table += f"<td>{item_info['quantity']}</td>"
+			items_table += f"<td>{item_info['remaining']}</td>"
 			items_table += f"<td>{item_info['expected_delivery_date']}</td>"
 			items_table += f"<td>{item_info['delay']} days</td>"
 			items_table += f"</tr>"
