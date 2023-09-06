@@ -17,7 +17,10 @@
   "email",
   "phone_number",
   "user",
-  "password"
+  "password",
+  "enabled",
+  "role_tab",
+  "role"
  ],
  "fields": [
   {
@@ -58,6 +61,7 @@
   {
    "fieldname": "user",
    "fieldtype": "Link",
+   "hidden": 1,
    "label": "User",
    "options": "User"
   },
@@ -71,11 +75,28 @@
    "fieldtype": "Link",
    "label": "Designation",
    "options": "Designation"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "role_tab",
+   "fieldtype": "Tab Break",
+   "label": "Role"
+  },
+  {
+   "fieldname": "role",
+   "fieldtype": "Table",
+   "label": "Role",
+   "options": "Employee Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-17 16:26:21.166384",
+ "modified": "2023-09-06 16:59:00.649536",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Employee",

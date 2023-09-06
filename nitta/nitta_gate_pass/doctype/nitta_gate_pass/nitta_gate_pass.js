@@ -47,13 +47,13 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_df_property("status", "hidden", 1);
     }
 
-    // if (frm.doc.status == "Draft") {
-    //   frm.refresh()
-    //   frm.set_df_property("workflow_name", "hidden", 0);
-    //   frm.set_df_property("workflow", "hidden", 0);
-    //   frm.set_df_property("next_approved_by", "hidden", 0);
-    //   frm.set_df_property("status", "hidden", 0);
-    // }
+    else {
+     
+      frm.set_df_property("workflow_name", "hidden", 0);
+      frm.set_df_property("workflow", "hidden", 0);
+      frm.set_df_property("next_approved_by", "hidden", 0);
+      frm.set_df_property("status", "hidden", 0);
+    }
 
     // Initiate only creator.
     if (!frm.is_new() && frm.doc.status == "Draft" && roles.includes("User")) {

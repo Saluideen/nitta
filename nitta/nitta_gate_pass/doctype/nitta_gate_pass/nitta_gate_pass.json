@@ -159,8 +159,7 @@
    "fieldname": "workflow",
    "fieldtype": "Table",
    "label": "Workflow Details",
-   "options": "Workflow Details",
-   "read_only": 1
+   "options": "Workflow Details"
   },
   {
    "fieldname": "next_approved_by",
@@ -285,7 +284,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-09-05 16:28:17.708752",
+ "modified": "2023-09-06 17:08:40.818854",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",

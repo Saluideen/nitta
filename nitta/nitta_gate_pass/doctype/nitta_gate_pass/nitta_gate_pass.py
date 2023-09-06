@@ -147,10 +147,20 @@ class NittaGatePass(Document):
 				<p>Material Dispatched with Gate Pass </p>
 				{gatepass}
 				<br>
+				<table style="width:100%;border-collapse: collapse;border: 2px solid black;">
+				<tr style="border: 1px solid black;padding: 8px; text-align: left;">
+				
+					<th>Item</th>
+					<th>Work to be Done</th>
+					<th>Quantity</th>
+					
+					<th>Expected Delivery Date</th>
+					
+				</tr>
+				{items}
+			</table>
 
-				<a href={gatepass_link}>
-				<button style="display: inline-block;padding: 10px 20px;padding: 10px 20px;background-color: #007BFF;color: #ffffff;
-				border-radius: 5px;">GatePass<button></a>
+				
 
 				<p>Thank you.</p>
 
@@ -158,11 +168,22 @@ class NittaGatePass(Document):
 			</body>
 			</html>
 			"""
+
+			items_table = ""
+			for item_info in self.item:
+				print("item_info.item",item_info.item)
+				items_table += f"<tr>"
+				items_table += f"<td>{item_info.item}</td>"
+				items_table+= f"<td>{item_info.work_to_be_done}</td>"
+				items_table += f"<td>{item_info.quantity}</td>"
+				items_table += f"<td>{item_info.expected_delivery_date}</td>"
+				items_table += f"</tr>"
 			message = message_template.format(
 			vendor=self.vendor,
 			vendor_email=self.vendor_email,
 			gatepass=self.name,
-			gatepass_link=get_url_to_form('Nitta Gate Pass',self.name)
+			items=items_table
+			
 			)
 			
 			frappe.sendmail(recipients=self.vendor_email,subject="Material Dispatched",message=message)
@@ -229,11 +250,16 @@ def get_workflow_transition(workflow_name,department,division):
 			employee_department=department
 		else:
 			employee_department=transition.department
+		
+		user_role=frappe.db.sql("""
+		SELECT er.role,er.division,er.department,e.user as employee FROM `tabEmployee` e INNER JOIN `tabEmployee Role`er ON er.parent=e.name WHERE e.enabled =1 AND er.role=%(role)s AND (er.division=%(division)s ) AND (er.department=%(department)s or er.department='Administration')
+		""",values={'role': transition.role, 'division': division, 'department': employee_department},as_dict=1)	
 	
-		user_role = frappe.db.sql("""
-		SELECT roles, division, department, user FROM `tabEmployee`
-		WHERE roles = %(role)s AND division = %(division)s AND department = %(department)s
-		""", values={'role': transition.role, 'division': division, 'department': employee_department},as_dict=1)
+	
+		# user_role = frappe.db.sql("""
+		# SELECT roles, division, department, user FROM `tabEmployee`
+		# WHERE roles = %(role)s AND division = %(division)s AND department = %(department)s
+		# """, values={'role': transition.role, 'division': division, 'department': employee_department},as_dict=1)
 		if user_role:  # Check if user_role list is not empty
 			data.append({'role': user_role[0].roles,'division': user_role[0].division, 'user': user_role[0].user, 'department': user_role[0].department})
 

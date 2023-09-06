@@ -24,7 +24,12 @@ frappe.query_reports["Nitta Gate Pass Report"] = {
 			"fieldtype": "Link",
 			"options": "Department",
 			"reqd": 1,
-			default: 'All'
+			default: 'All',
+			"get_query": function () {
+				return {
+					query: "nitta.nitta_gate_pass.doctype.department.department.get_department",
+				};
+			}
 
 
 		},

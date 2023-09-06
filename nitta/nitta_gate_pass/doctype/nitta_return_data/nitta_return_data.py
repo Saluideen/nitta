@@ -400,7 +400,7 @@ def delay_reminder():
 		items_table = ""
 		for item_info in items_list:
 			items_table += f"<tr>"
-			items_table += f"<td><a href=\"{get_url_to_form('Nitta Gate Pass', item_info['gatepass'])}\">{item_info['gatepass']}</a></td>"
+			items_table += f"<td>{item_info['gatepass']}</td>"
 			# items_table += f"<td>{item_info['gatepass']}</td>"
 			items_table += f"<td>{item_info['item']}</td>"
 			items_table += f"<td>{item_info['work_to_be_done']}</td>"
