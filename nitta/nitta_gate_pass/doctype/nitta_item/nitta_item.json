@@ -11,8 +11,11 @@
   "work_to_be_done",
   "quantity",
   "expected_delivery_date",
-  "image",
-  "remaining"
+  "remaining",
+  "download",
+  "upload",
+  "file_name",
+  "attachment"
  ],
  "fields": [
   {
@@ -45,11 +48,6 @@
    "label": "Quantity"
   },
   {
-   "fieldname": "image",
-   "fieldtype": "Attach Image",
-   "label": "Image"
-  },
-  {
    "fetch_from": "item.product_name",
    "fieldname": "pdt_name",
    "fieldtype": "Data",
@@ -60,13 +58,32 @@
    "fieldname": "remaining",
    "fieldtype": "Float",
    "label": "Remaining"
+  },
+  {
+   "fieldname": "download",
+   "fieldtype": "Button",
+   "label": "Download Image"
+  },
+  {
+   "fieldname": "upload",
+   "fieldtype": "Button",
+   "label": "Upload"
+  },
+  {
+   "fieldname": "file_name",
+   "fieldtype": "Data",
+   "label": "File Name"
+  },
+  {
+   "fieldname": "attachment",
+   "fieldtype": "Data",
+   "label": "Attachment"
   }
  ],
- "image_field": "image",
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-05 10:03:42.649237",
+ "modified": "2023-09-05 17:14:44.055334",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta item",

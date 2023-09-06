@@ -18,14 +18,30 @@ from frappe.desk.doctype.notification_log.notification_log import (
 
 class NittaGatePass(Document):
 	def validate(self):
+		department=get_employee_details(frappe.session.user)
 		#validation for way of Dispatch
-		if self.way_of_dispatch is None and self.current_department=="Security":
+		if department:
+			for d in department:
+				print(d['department'])
+		if self.way_of_dispatch is None and d['department']=="Security":
 			frappe.throw("Please Select Way of Dispatch")
+
+	def before_save(self):
+		doc= self.get_doc_before_save()
+		if(doc):
+			if self.status=="Draft":
+				if(doc.is_emergency != self.is_emergency):
+					self.workflow_name=None
+					self.approval_flow=[]
+					self.set_workflow()
+		else:
+			self.set_workflow()
+
 	
-	def after_insert(self):
-		self.doc_name=self.name
-		self.set_workflow()
-		self.save(ignore_permissions=True)
+	# def after_insert(self):
+	# 	self.doc_name=self.name
+	# 	self.set_workflow()
+	# 	self.save(ignore_permissions=True)
 	
 	def on_update(self):
 		if self.status=='Initiated':
@@ -46,7 +62,7 @@ class NittaGatePass(Document):
 		self.reload()
 	
 	def set_workflow(self):
-		emergency_dispatch_reminder()
+		
 		if self.is_emergency:
 			self.workflow_type="Emergency Dispatch"
 		else:
@@ -59,6 +75,7 @@ class NittaGatePass(Document):
 			frappe.throw("Set Dispatch Workflow")
 		if len(workflows)>0:
 			self.workflow_name=workflows[0].name
+			self.workflow=[]
 			
 			workflow_transitions=get_workflow_transition(self.workflow_name,self.department,self.division)
 			for transition in workflow_transitions['data']:
@@ -208,7 +225,7 @@ def get_workflow_transition(workflow_name,department,division):
 	transitions=frappe.get_all('Transition Rule',filters={'parent':workflow_name,'parenttype':'Nitta Workflow'},fields=['role','department'],order_by='idx')	
 	data=[]
 	for transition in transitions:
-		if transition.department=="current_department":
+		if transition.department=="FROM GATEPASS":
 			employee_department=department
 		else:
 			employee_department=transition.department
@@ -356,3 +373,12 @@ def update_gatepass(gate_pass,item,quantity):
 	doc.remaining =int(doc.remaining)-int(quantity)
 	doc.save()
 
+@frappe.whitelist()
+def remove_file_backgroud(files):
+    if isinstance(files, str):
+        files = json.loads(files)
+    frappe.enqueue(remove_file, queue='long', files=files)
+
+def remove_file(files):
+    for file in files:
+        frappe.delete_doc("File", file)

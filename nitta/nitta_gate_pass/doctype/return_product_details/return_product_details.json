@@ -9,7 +9,12 @@
   "item",
   "work_to_be_done",
   "remarks",
-  "item_name"
+  "item_name",
+  "return_quantity",
+  "quantity",
+  "remaining_quantity",
+  "sample",
+  "previous_remaining"
  ],
  "fields": [
   {
@@ -40,12 +45,37 @@
    "fieldname": "item_name",
    "fieldtype": "Data",
    "label": "name"
+  },
+  {
+   "fieldname": "return_quantity",
+   "fieldtype": "Float",
+   "label": "Return Quantity"
+  },
+  {
+   "fieldname": "quantity",
+   "fieldtype": "Float",
+   "label": "Quantity"
+  },
+  {
+   "fieldname": "remaining_quantity",
+   "fieldtype": "Float",
+   "label": "Remaining Quantity"
+  },
+  {
+   "fieldname": "sample",
+   "fieldtype": "Data",
+   "label": "sample"
+  },
+  {
+   "fieldname": "previous_remaining",
+   "fieldtype": "Data",
+   "label": "Previous Remaining"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-05 09:59:10.828947",
+ "modified": "2023-09-05 12:29:03.373170",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Return product Details",

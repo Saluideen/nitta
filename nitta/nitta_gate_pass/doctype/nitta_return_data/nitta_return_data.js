@@ -4,7 +4,7 @@
 
 frappe.ui.form.on("Nitta Return Data", {
   refresh: function (frm) {
-
+    // set current user department
     frappe.call({
       method:
         "nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.get_employee_details",
@@ -22,6 +22,7 @@ frappe.ui.form.on("Nitta Return Data", {
       var currentDate = frappe.datetime.get_today();
       frm.set_value("from_date", currentDate);
     }
+    // initiate 
     if (!frm.is_new() && frm.doc.status == "Draft") {
       cur_frm.page.add_action_item("Initiate", function () {
         frm.doc.status = "Initiated";
@@ -48,16 +49,22 @@ frappe.ui.form.on("Nitta Return Data", {
       frm.set_df_property("from_date", "read_only", 1);
       frm.set_df_property("vendor_name", "read_only", 1);
       frm.set_df_property("workflow", "read_only", 1);
-      frm.set_df_property("product", "read_only", 1);
+      frm.set_df_property("product", "read_only", 0);
     }
-
+    if (roles.includes("Security")) {
+      frm.set_df_property("way_of_return", "hidden", 0);
+      frm.set_df_property("product", "hidden", 1);
+      frm.set_df_property("from_date", "read_only", 1);
+      frm.set_df_property("vendor_name", "read_only", 1);
+      frm.set_df_property("workflow", "read_only", 1);
+    }
     if (
       frm.doc.next_approved_by == frappe.session.user &&
       frm.doc.status != "Final Approved"
     ) {
-		console.log('test');
+      
       // if((frm.doc.status !="Final Approved")){
-      frm.page.add_action_item("Approve 1", () => {
+      frm.page.add_action_item("Approve ", () => {
         let index = frm.doc.workflow.findIndex(
           (el) => el.employee == frappe.session.user && el.status != "Approved"
         );
@@ -72,11 +79,13 @@ frappe.ui.form.on("Nitta Return Data", {
 
     frm.set_query("gate_pass", function () {
       return {
-        // query: "nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.get_gate_pass",
+       
         filters: { status: ["in", ["Dispatched", "Partially Completed"]] },
       };
     });
   },
+
+  // hide fields 
   way_of_return: function (frm) {
     frm.refresh();
     let way_of_dispatch = frm.doc.way_of_return;
@@ -91,6 +100,8 @@ frappe.ui.form.on("Nitta Return Data", {
       frm.set_df_property("phone", "hidden", 1);
     }
   },
+
+  // insert gate pass material details in return document
   gate_pass: function (frm) {
     frappe.call({
       method:
@@ -102,15 +113,6 @@ frappe.ui.form.on("Nitta Return Data", {
         console.log(r.message[1]);
 
         r.message[0].forEach((el) => {
-          // let found = false
-          // if (frm.doc.product) {
-          // 	found = frm.doc.product.find(function (record) {
-          // 		if (record.item == el.item)
-          // 			return true;
-          // 	});
-          // }
-
-          // if (!found) {
           frm.add_child("product", {
             item: el.item,
             work_to_be_done: el.work_to_be_done,
@@ -120,6 +122,7 @@ frappe.ui.form.on("Nitta Return Data", {
             previous_return_quantity: el.return_quantity,
             expected_delivery_date: el.expected_delivery_date,
             item_name: el.name,
+            previous_remaining:el.remaining
           });
 
           frm.refresh_field("product");
@@ -139,21 +142,19 @@ frappe.ui.form.on("Return product Details", {
     let remains =
       (parseFloat(row.remaining_quantity) || 0) -
       (parseFloat(row.return_quantity) || 0);
+    let previous=(parseFloat(row.previous_remaining) || 0) -
+    (parseFloat(row.return_quantity) || 0);
+    if(remains=previous){
+      frappe.model.set_value(cdt, cdn, "remaining_quantity", remains);
+    }
+    else{
+      frappe.model.set_value(cdt, cdn, "remaining_quantity", previous);
+
+    }
     // let remaining_quantity = parseFloat(row.quantity)-parseFloat(remains)
-    frappe.model.set_value(cdt, cdn, "remaining_quantity", remains);
+    
     console.log(row.item_name);
 
-    // update gatepass remaining quantity
-    //  frappe.call({
-    //     method: 'nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.update_gatepass',
-    //     args: {
-    // 		gate_pass:frm.doc.gate_pass,
-    // 		item:row.item_name,
-    //         quantity: row.return_quantity,
-    //     },
-    //     callback: function (r) {
-
-    //     }
-    // });
+   
   },
 });

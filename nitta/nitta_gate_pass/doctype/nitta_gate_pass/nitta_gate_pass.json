@@ -285,7 +285,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-09-04 10:21:06.212411",
+ "modified": "2023-09-05 16:28:17.708752",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",
@@ -307,5 +307,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

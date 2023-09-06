@@ -18,14 +18,17 @@ from frappe.desk.doctype.notification_log.notification_log import (
 class NittaReturnData(Document):
 	
 	def validate(self):
+		department=get_employee_details(frappe.session.user)
+		if department:
+			for d in department:
 		#validation for item state
-		if self.item_state=="Select" and self.department_store=="Store":
-			frappe.throw("Select Item Status")
+				if self.item_state=="Select" and d['department']=="Store":
+					frappe.throw("Select Item Status")
 		# validation for closed gatepass	
 		Gate_pass_status=frappe.get_all("Nitta Gate Pass",filters={'name':self.gate_pass},
 		fields=['status'])
 		for status in Gate_pass_status:
-			print("Status",status['status'])
+			
 			if status['status']=="Close":
 				frappe.throw("Gate Pass Already Closed")
 		#Validation for item quantity
@@ -42,46 +45,26 @@ class NittaReturnData(Document):
 		
 			
 	def after_insert(self):
+		
 		self.set_workflow()
 		self.save(ignore_permissions=True)
 	
 	def on_update(self):
-		# last_update=self.get_doc_before_save()
-		# for product in last_update.product:
-		# 	for p in self.product:
-		# 		if p.return_quantity is None:
-		# 			p.return_quantity=0
-		# 		if(p.name == product.name and p.remaining_quantity != product.remaining_quantity):
-		# 			doc = frappe.get_doc('Nitta item', p.item_name)
-		# 			doc.remaining =float(product.remaining_quantity) - float(p.return_quantity)
-		# 			doc.db_update()
-		# 		else:
-		# 			doc = frappe.get_doc('Nitta item',p.item_name)
-		# 			doc.remaining =p.remaining_quantity
-		# 			doc.db_update()
+		delay_reminder()
+		last_update=self.get_doc_before_save()
+		for product in last_update.product:
+			for p in self.product:
+				if p.return_quantity is None:
+					p.return_quantity=0
+				if(p.name == product.name and p.remaining_quantity != product.remaining_quantity):
+					doc = frappe.get_doc('Nitta item', p.item_name)
+					doc.remaining =float(product.remaining_quantity) - float(p.return_quantity)
+					doc.db_update()
+				else:
+					doc = frappe.get_doc('Nitta item',p.item_name)
+					doc.remaining =p.remaining_quantity
+					doc.db_update()
 
-
-					
-			# print(product.remaining_quantity)
-
-		# Update gatepass remaining quantity aganist return quantity
-		# for item in self.product:
-		# 	last_update=self.get_doc_before_save()
-		# 	print('last_update',last_update)
-			
-			# # last_update = frappe.get_last_doc('Nitta item', filters={"name": item.item_name})
-			# doc = frappe.get_doc('Nitta item', item.item_name)
-			# print("last_update",last_update.remaining,"item.return_quantity",item.return_quantity)
-			# if item.return_quantity is None:
-			# 	item.return_quantity = 0
-			# if last_update:
-			# 	remains=float(str(last_update.remaining) or "0") - float(str(item.return_quantity) or "0")
-			# 	if remains == item.remaining_quantity:
-			# 		doc.remaining =item.remaining_quantity
-			# 		doc.save()
-			# else:
-			# 	doc.remaining=remains
-			# 	doc.save()
 
 		if self.status=='Initiated':
 			self.update_assigned_date(1)
@@ -115,35 +98,7 @@ class NittaReturnData(Document):
 						'role':transition['role'],
 						'division':transition['division']
 						})
-		# workflows=frappe.get_all("Workflow Details",filters={'parent':self.gate_pass},
-		# fields=['employee','role','department','division'],
-		# order_by='creation DESC')
-		# print("workflows",workflows)
-		# if len(workflows)==0:
-		# 	frappe.throw("Set Workflow")
 		
-		# for transition in workflows:
-		# 	 # Insert department hod role next
-		# 	if (transition.department != "Store") and (transition.department != "Security"):
-			
-		# 		self.append("workflow", {
-		# 					'role': transition['role'],
-		# 					'employee': transition['employee'],
-		# 					'department': transition['department'],
-		# 					'status': 'Pending',
-		# 					'division': transition['division']
-		# 		})
-
-		# for transition in workflows:
-        # # Insert store hod role last
-		# 	if transition.department == 'Store':
-		# 		self.append("workflow", {
-		# 					'role': transition['role'],
-		# 					'employee': transition['employee'],
-		# 					'department': transition['department'],
-		# 					'status': 'Pending',
-		# 					'division': transition['division']
-		# 		})
 
 
 	def update_assigned_date(self,index):
@@ -166,7 +121,7 @@ class NittaReturnData(Document):
 
 
 	def update_workflow(self):
-		delay_reminder()
+		
 		self.current_approval_level=0
 		self.max_approval_level=0
 		self.status="Initiated"
@@ -228,7 +183,7 @@ def get_workflow_transition(workflow_name,department,division):
 	transitions=frappe.get_all('Transition Rule',filters={'parent':workflow_name,'parenttype':'Nitta Workflow'},fields=['role','department'],order_by='idx')	
 	data=[]
 	for transition in transitions:
-		if transition.department=="current_department":
+		if transition.department=="FROM GATEPASS":
 			employee_department=department
 		else:
 			employee_department=transition.department
@@ -305,6 +260,7 @@ def get_employee_details(name):
 
 def delay_reminder():
 	
+	
 	delayed_gate_pass=frappe.db.sql("""select gate_pass.name,gate_pass.division,gate_pass.department,
 	gate_pass.owner,gate_pass.vendor,gate_pass.vendor_email,
 		pdt.pdt_name as item,
@@ -316,14 +272,16 @@ def delay_reminder():
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
         
         
-		where gate_pass.status !="Close" and DATEDIFF(CURDATE(), pdt.expected_delivery_date)='92' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='182' or
+		where gate_pass.status !="Close" and DATEDIFF(CURDATE(), pdt.expected_delivery_date)='72' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='152' or
 		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='366' """,as_dict=1)
 	# Create a dictionary to group items based on vendor_email
 	vendor_items = {}
+	division_group={}
 
 	# Iterate through the delayed_gate_pass results
 	for gate_pass_info in delayed_gate_pass:
 		vendor_email = gate_pass_info["vendor_email"]
+		division=gate_pass_info["division"]
 		item_info = {
 			"gatepass":gate_pass_info["name"],
 			"item": gate_pass_info["item"],
@@ -331,7 +289,9 @@ def delay_reminder():
 			"quantity":gate_pass_info["quantity"],
 			"remaining":gate_pass_info["remaining"],
 			"expected_delivery_date": gate_pass_info["expected_delivery_date"],
-			"delay": gate_pass_info["delay"]
+			"delay": gate_pass_info["delay"],
+			"vendor":gate_pass_info["vendor"],
+			"vendor_email":gate_pass_info["vendor_email"]
 		}
 
 		# Check if the vendor_email already exists in the vendor_items dictionary
@@ -341,13 +301,75 @@ def delay_reminder():
 		else:
 			# If it doesn't exist, create a new entry in the dictionary
 			vendor_items[vendor_email] = [item_info]
+
+		if division in division_group:
+			division_group[division].append(gate_pass_info)
+		else:
+			division_group[division] = [gate_pass_info]
+
+	# Iterate through the division groups and send emails to Finance Heads
+	for division, gate_pass_list in division_group.items():
+		# Assuming you have a function to fetch the Finance Head's email address based on the division
+		finance_head_email_data = get_finance_head_email(division)
+		if finance_head_email_data:
+			finance_head_email=finance_head_email_data[0]['email']
+
+		# Prepare the message for the email
+		items_table = ""
+		for gate_pass_info in gate_pass_list:
+			items_table += f"<tr>"
+			items_table += f"<td><a href=\"{get_url_to_form('Nitta Gate Pass', gate_pass_info['name'])}\">{gate_pass_info['name']}</a></td>"
+			items_table += f"<td>{gate_pass_info['item']}</td>"
+			items_table += f"<td>{gate_pass_info['work_to_be_done']}</td>"
+			items_table += f"<td>{gate_pass_info['quantity']}</td>"
+			items_table += f"<td>{gate_pass_info['remaining']}</td>"
+			items_table += f"<td>{gate_pass_info['expected_delivery_date']}</td>"
+			items_table += f"<td>{gate_pass_info['delay']} days</td>"
+			items_table += f"</tr>"
+
+		subject = "Delayed Gate Pass Information for Division: " + division
+		message_template = """
+			<html>
+			<body>
+				<p>Dear Finance Head,</p>
+				<p>Here is the list of delayed gate passes and their associated items for Division: {division}</p>
+				<table style="width:100%;border-collapse:collapse;border:2px solid black;">
+					<tr style="border:1px solid black;padding:8px;text-align:left;">
+						<th>Gate Pass</th>
+						<th>Item</th>
+						<th>Work to be Done</th>
+						<th>Quantity</th>
+						<th>Remaining Quantity</th>
+						<th>Expected Delivery Date</th>
+						<th>Delay (days)</th>
+					</tr>
+					{items}
+				</table>
+				<p>Thank you.</p>
+				<p>Sincerely,<br>Nitta</p>
+			</body>
+			</html>
+		"""
+
+		message = message_template.format(division=division, items=items_table)
+
+		# Send the email to the Finance Head of the division
+		frappe.sendmail(
+			recipients=finance_head_email,
+			subject=subject,
+			message=message,
+		)
+		
+
+
+		
 	subject = "Delayed Gate Pass Information"
 	message_template = """
 		<html>
 		
 		
 		<body>
-			<p>Dear Vendor,</p>
+			<p>Dear {vendor},</p>
 
 			<p>Here is the list of delayed gate passes and their associated items:</p>
 
@@ -355,7 +377,7 @@ def delay_reminder():
 
 			<table style="width:100%;border-collapse: collapse;border: 2px solid black;">
 				<tr style="border: 1px solid black;padding: 8px; text-align: left;">
-				<a href={gatepass_link}<th>Gate Pass</th></a>
+				<th>Gate Pass</th>
 					<th>Item</th>
 					<th>Work to be Done</th>
 					<th>Quantity</th>
@@ -378,7 +400,8 @@ def delay_reminder():
 		items_table = ""
 		for item_info in items_list:
 			items_table += f"<tr>"
-			items_table += f"<td>{item_info['gatepass']}</td>"
+			items_table += f"<td><a href=\"{get_url_to_form('Nitta Gate Pass', item_info['gatepass'])}\">{item_info['gatepass']}</a></td>"
+			# items_table += f"<td>{item_info['gatepass']}</td>"
 			items_table += f"<td>{item_info['item']}</td>"
 			items_table += f"<td>{item_info['work_to_be_done']}</td>"
 			items_table += f"<td>{item_info['quantity']}</td>"
@@ -388,20 +411,26 @@ def delay_reminder():
 			items_table += f"</tr>"
 
 		message = message_template.format(
-			gatepass_link=get_url_to_form('Nitta Gate Pass',self.name),
-			
+			gatepass_link=get_url_to_form('Nitta Gate Pass',item_info['gatepass']),
+			vendor=item_info['vendor'],
 			vendor_email=vendor_email,
 			items=items_table
 		)
-		# Send the email
+		# Send  email to vendor
 		frappe.sendmail(
 			recipients=vendor_email,
 			subject=subject,
 			message=message,
 			
 		)
+	# send mail to Finance Department hod
 	
+	# frappe.sendmail(template=finance.html,subject=subject,args=args)
 
-	
 
+
+def get_finance_head_email(division):
+	finance_head_email= frappe.db.sql("""select email from `tabEmployee` where division=%(division)s and department='Finance' and roles='HOD' """,
+	values={'division':division},as_dict=1)
+	return finance_head_email
 
