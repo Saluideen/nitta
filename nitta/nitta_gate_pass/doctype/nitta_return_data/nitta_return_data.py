@@ -231,19 +231,6 @@ def notify_assignment(shared_by, doctype, doc_name,status):
 def get_gatepass_details(gate_pass):
 	gate_pass_details=frappe.db.sql("""select * from `tabNitta Gate Pass`  where name=%(name)s""",
 	values={"name":gate_pass},as_dict=1)
-
-	# check if  return document aganist gatepass
-	# return_gate_pass = frappe.get_all("Nitta Return Data", 
-    #                                filters={'gate_pass': gate_pass},
-	# 							   fields=['name'],
-    #                                order_by='creation desc',
-    #                                limit=1)
-
-	# if return_gate_pass:
-	# 	print(return_gate_pass[0]['name'])
-	# 	dispatch_item=frappe.get_all("Return product Details",filters={'parent':return_gate_pass[0]['name']},
-	# 	fields=['item','work_to_be_done','quantity','return_quantity','previous_return_quantity','remaining_quantity','remarks','expected_delivery_date'])
-	# else:
 	dispatch_item=frappe.get_all("Nitta item",filters={'parent':gate_pass},
 	fields=['item','work_to_be_done','expected_delivery_date','quantity','remaining','name'])
 
@@ -273,8 +260,8 @@ def delay_reminder():
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
         
         
-		where gate_pass.status !="Close" and DATEDIFF(CURDATE(), pdt.expected_delivery_date)='36' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='36' or
-		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='37' """,as_dict=1)
+		where gate_pass.status !="Close" and DATEDIFF(CURDATE(), pdt.expected_delivery_date)='38' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='36' or
+		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='4' """,as_dict=1)
 	# Create a dictionary to group items based on vendor_email
 	vendor_items = {}
 	division_group={}
@@ -292,7 +279,9 @@ def delay_reminder():
 			"expected_delivery_date": gate_pass_info["expected_delivery_date"],
 			"delay": gate_pass_info["delay"],
 			"vendor":gate_pass_info["vendor"],
-			"vendor_email":gate_pass_info["vendor_email"]
+			"vendor_email":gate_pass_info["vendor_email"],
+			"department":gate_pass_info["department"],
+			
 		}
 
 		# Check if the vendor_email already exists in the vendor_items dictionary
@@ -316,119 +305,41 @@ def delay_reminder():
 			finance_head_email=finance_head_email_data[0]['email']
 		else:
 			frappe.throw("Employee Not Found in Finance Department")
-
-		# Prepare the message for the email
-		items_table = ""
-		for gate_pass_info in gate_pass_list:
-			items_table += f"<tr>"
-			items_table += f"<td><a href=\"{get_url_to_form('Nitta Gate Pass', gate_pass_info['name'])}\">{gate_pass_info['name']}</a></td>"
-			items_table += f"<td>{gate_pass_info['item']}</td>"
-			items_table += f"<td>{gate_pass_info['work_to_be_done']}</td>"
-			items_table += f"<td>{gate_pass_info['quantity']}</td>"
-			items_table += f"<td>{gate_pass_info['remaining']}</td>"
-			items_table += f"<td>{gate_pass_info['expected_delivery_date']}</td>"
-			items_table += f"<td>{gate_pass_info['delay']} days</td>"
-			items_table += f"</tr>"
-
-		subject = "Delayed Gate Pass Information for Division: " + division
-		message_template = """
-			<html>
-			<body>
-				<p>Dear Finance Head,</p>
-				<p>Here is the list of delayed gate passes and their associated items for Division: {division}</p>
-				<table style="width:100%;border-collapse:collapse;border:2px solid black;">
-					<tr style="border:1px solid black;padding:8px;text-align:left;">
-						<th>Gate Pass</th>
-						<th>Item</th>
-						<th>Work to be Done</th>
-						<th>Quantity</th>
-						<th>Remaining Quantity</th>
-						<th>Expected Delivery Date</th>
-						<th>Delay (days)</th>
-					</tr>
-					{items}
-				</table>
-				<p>Thank you.</p>
-				<p>Sincerely,<br>Nitta</p>
-			</body>
-			</html>
-		"""
-
-		message = message_template.format(division=division, items=items_table)
-
 		# Send the email to the Finance Head of the division
-		frappe.sendmail(
+		args={
+				"division":division,
+				"items":gate_pass_list,
+				"gate_pass_link":get_url_to_form('Nitta Gate Pass', gate_pass_info['name'])
+				}
+		subject = "Delayed Gate Pass Information for Division: " + division
+		
+		frappe.sendmail(template='finance',
 			recipients=finance_head_email,
 			subject=subject,
-			message=message,
+			args=args
 		)
 		
 
 
-		
+	# Send delay mail to vendor	
 	subject = "Delayed Gate Pass Information"
-	message_template = """
-		<html>
-		
-		
-		<body>
-			<p>Dear {vendor},</p>
-
-			<p>Here is the list of delayed gate passes and their associated items:</p>
-
-			<p>Vendor Email: {vendor_email}</p>
-
-			<table style="width:100%;border-collapse: collapse;border: 2px solid black;">
-				<tr style="border: 1px solid black;padding: 8px; text-align: left;">
-				<th>Gate Pass</th>
-					<th>Item</th>
-					<th>Work to be Done</th>
-					<th>Quantity</th>
-					<th>Remaining Quantity</th>
-					<th>Expected Delivery Date</th>
-					<th>Delay (days)</th>
-				</tr>
-				{items}
-			</table>
-
-			<p>Thank you.</p>
-
-			<p>Sincerely,<br>Nitta</p>
-		</body>
-		</html>
-		"""
 	# Iterate through the 'vendor_items' dictionary and send emails
 	for vendor_email, items_list in vendor_items.items():
-		# Prepare the message for the email
-		items_table = ""
-		for item_info in items_list:
-			items_table += f"<tr>"
-			items_table += f"<td>{item_info['gatepass']}</td>"
-			# items_table += f"<td>{item_info['gatepass']}</td>"
-			items_table += f"<td>{item_info['item']}</td>"
-			items_table += f"<td>{item_info['work_to_be_done']}</td>"
-			items_table += f"<td>{item_info['quantity']}</td>"
-			items_table += f"<td>{item_info['remaining']}</td>"
-			items_table += f"<td>{item_info['expected_delivery_date']}</td>"
-			items_table += f"<td>{item_info['delay']} days</td>"
-			items_table += f"</tr>"
-
-		message = message_template.format(
-			gatepass_link=get_url_to_form('Nitta Gate Pass',item_info['gatepass']),
-			vendor=item_info['vendor'],
-			vendor_email=vendor_email,
-			items=items_table
-		)
+		
+		args={
+			
+			'vendor':item_info['vendor'],
+			'vendor_email':vendor_email,
+			'items':items_list
+		}
 		# Send  email to vendor
-		frappe.sendmail(
+		frappe.sendmail(template='delay',
 			recipients=vendor_email,
 			subject=subject,
-			message=message,
+			args=args
 			
 		)
-	# send mail to Finance Department hod
 	
-	# frappe.sendmail(template=finance.html,subject=subject,args=args)
 
 
 
@@ -436,6 +347,6 @@ def get_finance_head_email(division):
 	finance_head_email= frappe.db.sql("""select em.email from `tabEmployee` em 
 	inner join `tabEmployee Role` er on em.name=er.parent  where er.division=%(division)s and er.department='Finance' and er.role='HOD' """,
 	values={'division':division},as_dict=1)
-	print("finance_head_email",finance_head_email)
+
 	return finance_head_email
 

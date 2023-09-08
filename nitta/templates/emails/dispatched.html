@@ -1,0 +1,33 @@
+
+				<p>Dear {{vendor}},</p>
+
+				<p>Vendor Email: {{vendor_email}}</p>
+				<p>Material Dispatched with Gate Pass </p><br>
+				{{gatepass}}
+				<br><br>
+				<table style="width:100%;border-collapse: collapse;border: 2px solid black;">
+				<tr style="border: 1px solid black;padding: 8px; text-align: left;">
+				
+					<th>Item</th>
+					<th>Work to be Done</th>
+					<th>Quantity</th>
+					
+					<th>Expected Delivery Date</th>
+					
+				</tr>
+                {% for item in items %}
+				<tr>
+                    <td>{{item.item}}</td>
+                    <td>{{item.work_to_be_done}}</td>
+                    <td>{{item.quantity}}</td>
+                   <td>{{item.expected_delivery_date}}</td>
+                   </tr>
+                   {% endfor %}
+			</table>
+
+				
+
+				<p>Thank you.</p>
+
+				<p>Sincerely,<br>Nitta</p>
+			

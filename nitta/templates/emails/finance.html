@@ -1,0 +1,35 @@
+<html>
+			<body>
+				<p>Dear Finance Head,</p>
+				<p>Here is the list of delayed gate passes and their associated items for Division: {{division}}</p>
+				<table style="width:100%;border-collapse:collapse;border:2px solid black;">
+					<tr style="border:1px solid black;padding:8px;text-align:left;">
+						<th>Gate Pass</th>
+                        <th>Department</th>
+                        <th>Vendor</th>
+						<th>Item</th>
+						<th>Work to be Done</th>
+						<th>Quantity</th>
+						<th>Remaining Quantity</th>
+						<th>Expected Delivery Date</th>
+						<th>Delay (days)</th>
+					</tr>
+					{% for item in items %}
+                   <tr>
+                       <td><a href="\{{gate_pass_link}}\">{{item.name}}</a></td>
+                       <td>{{item.department}}</td>
+                       <td>{{item.vendor}}</td>
+                       <td>{{item.item}}</td>
+                       <td>{{item.work_to_be_done}}</td>
+                        <td>{{item.quantity}}</td>
+                        <td>{{item.remaining}}</td>
+                        <td>{{item.expected_delivery_date}}</td>
+                        <td>{{item.delay }}</td>
+                       </tr>
+				
+                   {% endfor %}
+				</table>
+				<p>Thank you.</p>
+				<p>Sincerely,<br>Nitta</p>
+			</body>
+			</html>

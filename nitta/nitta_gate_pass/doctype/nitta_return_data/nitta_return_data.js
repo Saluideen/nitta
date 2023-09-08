@@ -24,11 +24,26 @@ frappe.ui.form.on("Nitta Return Data", {
 
   // hide fields
   way_of_return: function (frm) {
+    frm.doc.recipient_name=undefined
+    frm.doc.phone=undefined
+    frm.doc.courier_number=undefined
+    frm.doc.courier_company=undefined
+    frm.doc.driver_name=undefined
+    frm.doc.contact_number=undefined
+    frm.doc.registration_number=undefined
+    frm.refresh_field("recipient_name");
+    frm.refresh_field("phone");
+    frm.refresh_field("courier_number");
+    frm.refresh_field("courier_company");
+    frm.refresh_field("driver_name");
+    frm.refresh_field("contact_number");
+    frm.refresh_field("registration_number");
     let way_of_dispatch = frm.doc.way_of_return;
     if (way_of_dispatch == "By Hand") {
       frm.set_df_property("recipient_name", "hidden", 0);
       frm.set_df_property("phone", "hidden", 0);
       frm.set_df_property("courier_number", "hidden", 1);
+      frm.set_df_property("courier_company", "hidden", 1);
       frm.set_df_property("driver_name", "hidden", 1);
       frm.set_df_property("contact_number", "hidden", 1);
       frm.set_df_property("registration_number", "hidden", 1);
@@ -39,8 +54,10 @@ frappe.ui.form.on("Nitta Return Data", {
       frm.set_df_property("recipient_name", "hidden", 1);
       frm.set_df_property("phone", "hidden", 1);
       frm.set_df_property("courier_number", "hidden", 1);
+      frm.set_df_property("courier_company", "hidden", 1);
     } else {
       frm.set_df_property("courier_number", "hidden", 0);
+      frm.set_df_property("courier_company", "hidden", 0);
       frm.set_df_property("driver_name", "hidden", 1);
       frm.set_df_property("contact_number", "hidden", 1);
       frm.set_df_property("registration_number", "hidden", 1);

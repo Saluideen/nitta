@@ -3,6 +3,10 @@
 
 frappe.ui.form.on("Nitta Gate Pass", {
   refresh: function (frm) {
+    if(roles.includes("Security") && frm.doc.status=="Initiated"&& frm.doc.is_emergency=='1'){
+      frm.set_df_property("way_of_dispatch", "hidden", 0);
+
+    }
     //  hide connection + icon
     $(".btn.btn-new.btn-secondary.btn-xs.icon-btn").hide();
     // hide connection based on status
@@ -20,10 +24,9 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_value("from_date", currentDate);
     }
 
-    if (roles.includes("Security")) {
-      
-    }
-
+   
+    // Apply filter to workflow employee based on division and department
+    frm.events.set_employee_filter(frm);
     //set initiator  department nd division and hide workflow and product table
     frm.events.set_initiator_data(frm);
 
@@ -43,6 +46,21 @@ frappe.ui.form.on("Nitta Gate Pass", {
 
   way_of_dispatch: function (frm) {
     let way_of_dispatch = frm.doc.way_of_dispatch;
+    frm.doc.recipient = undefined;
+    frm.doc.phone = undefined;
+    frm.doc.courier_number = undefined;
+    frm.doc.courier_company = undefined;
+    frm.doc.driver_name = undefined;
+    frm.doc.contact_number = undefined;
+    frm.doc.registration_number = undefined;
+
+    frm.refresh_field("recipient");
+    frm.refresh_field("phone");
+    frm.refresh_field("courier_number");
+    frm.refresh_field("courier_company");
+    frm.refresh_field("driver_name");
+    frm.refresh_field("contact_number");
+    frm.refresh_field("registration_number");
     if (way_of_dispatch == "By Hand") {
       frm.set_df_property("recipient", "hidden", 0);
       frm.set_df_property("phone", "hidden", 0);
@@ -106,6 +124,22 @@ frappe.ui.form.on("Nitta Gate Pass", {
     return file_doc;
   },
   //////////////////////////////////// Custom methods ////////////////////////////////////
+  set_employee_filter: function (frm) {
+    frm.fields_dict["workflow"].grid.get_field("employee").get_query =
+      function (doc, cdt, cdn) {
+        var child = locals[cdt][cdn];
+
+        return {
+          query:
+            "nitta.nitta_gate_pass.doctype.nitta_workflow.nitta_workflow.get_employee",
+          filters: {
+            division: child.division,
+            department: child.department,
+            role: child.role,
+          },
+        };
+      };
+  },
   set_initiator_data: function (frm) {
     if (frm.is_new()) {
       frappe.call({
@@ -130,7 +164,6 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_df_property("next_approved_by", "hidden", 1);
       frm.set_df_property("status", "hidden", 1);
       frm.set_df_property("item", "hidden", 1);
-
     } else {
       frm.set_df_property("workflow_name", "hidden", 0);
       frm.set_df_property("workflow", "hidden", 0);
@@ -140,15 +173,20 @@ frappe.ui.form.on("Nitta Gate Pass", {
     }
   },
   hide_emergency: function (frm) {
-    if (frm.doc.status == "Initiated" && frm.doc.is_emergency != 1) {
+    if (frm.doc.status == "Draft") {
+      frm.set_df_property("is_emergency", "hidden", 0);
+    } else if (frm.doc.status != "Draft" && frm.doc.is_emergency != 1) {
       frm.set_df_property("is_emergency", "hidden", 1);
     }
   },
   initiate: function (frm) {
-   
-      var itemTable = frm.doc.item; 
-      if (itemTable && itemTable.length > 0) {
-        if (!frm.is_new() && frm.doc.status === "Draft" && roles.includes("User")) {
+    var itemTable = frm.doc.item;
+    if (itemTable && itemTable.length > 0) {
+      if (
+        !frm.is_new() &&
+        frm.doc.status === "Draft" &&
+        roles.includes("User")
+      ) {
         // The child table is not empty, so show the "Initiate" button
         frm.set_df_property("item", "hidden", 0);
         cur_frm.page.add_action_item("Initiate", function () {
@@ -156,20 +194,22 @@ frappe.ui.form.on("Nitta Gate Pass", {
           frm.refresh_field("status");
           frm.dirty();
           frm.save();
-          
         });
         frm.change_custom_button_type("Initiate", null, "primary");
-      } 
+      }
     }
-    
+    else{
+      frm.msgprint("Please Enter Material Details")
+    }
   },
   disable_forms: function (frm) {
-    console.log("hide",frm.doc.status);
-    if(frm.doc.status=="Initiated"){
-      frm.disable_save()
-          frm.disable_form()
+  
+    if (frm.doc.status == "Initiated" && !roles.includes("Security")) {
+      frm.disable_save();
+      frm.disable_form();
     }
-    
+    c
+
     if (frm.doc.status != "Draft" && !roles.includes("Security")) {
       frm.disable_save();
       frm.disable_form();
@@ -186,14 +226,16 @@ frappe.ui.form.on("Nitta Gate Pass", {
   },
   hide_security_fields: function (frm) {
     if (roles.includes("Security")) {
+      
+
       frm.set_df_property("from_date", "read_only", 1);
       frm.set_df_property("is_emergency", "read_only", 1);
       frm.set_df_property("vendor", "read_only", 1);
       frm.set_df_property("item", "read_only", 1);
       frm.set_df_property("workflow", "read_only", 1);
-      frm.set_df_property("way_of_dispatch", "hidden", 0);
+      
     }
-    
+   
   },
   approve_reject: function (frm) {
     if (

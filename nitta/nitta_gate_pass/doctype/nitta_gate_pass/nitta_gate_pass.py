@@ -26,6 +26,12 @@ class NittaGatePass(Document):
 		if self.way_of_dispatch is None and d['department']=="Security":
 			frappe.throw("Please Select Way of Dispatch")
 
+		# Validation for expected delivery date
+		for item in self.item:
+			if item.expected_delivery_date < frappe.utils.today():
+				frappe.throw("Expected Delivery Date cannot be lesser than the current date for item {}".format(item.pdt_name))
+
+
 		
 
 	def before_save(self):
@@ -144,58 +150,18 @@ class NittaGatePass(Document):
 			
 			self.next_approval_by=None
 			self.status='Dispatched'
+			if not self.is_emergency:
 			
-			message_template="""
-			<html>
-			
-			
-			<body>
-				<p>Dear {vendor},</p>
-
-				<p>Vendor Email: {vendor_email}</p>
-				<p>Material Dispatched with Gate Pass </p>
-				{gatepass}
-				<br>
-				<table style="width:100%;border-collapse: collapse;border: 2px solid black;">
-				<tr style="border: 1px solid black;padding: 8px; text-align: left;">
+				# Send mail to vendor
+				args={
+					"message":"Material Dispatched",
+					"vendor":self.vendor,
+					"vendor_email":self.vendor_email,
+					"items":self.item,
+					"gatepass":self.name
+				}
 				
-					<th>Item</th>
-					<th>Work to be Done</th>
-					<th>Quantity</th>
-					
-					<th>Expected Delivery Date</th>
-					
-				</tr>
-				{items}
-			</table>
-
-				
-
-				<p>Thank you.</p>
-
-				<p>Sincerely,<br>Nitta</p>
-			</body>
-			</html>
-			"""
-
-			items_table = ""
-			for item_info in self.item:
-				print("item_info.item",item_info.item)
-				items_table += f"<tr>"
-				items_table += f"<td>{item_info.item}</td>"
-				items_table+= f"<td>{item_info.work_to_be_done}</td>"
-				items_table += f"<td>{item_info.quantity}</td>"
-				items_table += f"<td>{item_info.expected_delivery_date}</td>"
-				items_table += f"</tr>"
-			message = message_template.format(
-			vendor=self.vendor,
-			vendor_email=self.vendor_email,
-			gatepass=self.name,
-			items=items_table
-			
-			)
-			
-			frappe.sendmail(recipients=self.vendor_email,subject="Material Dispatched",message=message)
+				frappe.sendmail(template='dispatched',recipients=self.vendor_email,subject="Material Dispatched",args=args)
 			notify_Initiator(self.user,"Nitta Gate Pass",self.name)
 			if current_user_index>0:
 				self.update_updated_date(current_user_index)
@@ -225,7 +191,17 @@ class NittaGatePass(Document):
 				# self.status='Level '+str(self.current_approval_level)+' Approved'
 				approval_flow = self.workflow[self.current_approval_level-1]
 				self.status='Level '+str(self.current_approval_level)+'('+approval_flow.department+'-' +approval_flow.role +')'+' Approved'
-
+				if approval_flow.role=="Security" and self.is_emergency:
+					# Send mail to vendor (emergency Dispatch)
+					args={
+						"message":"Material Dispatched",
+						"vendor":self.vendor,
+						"vendor_email":self.vendor_email,
+						"items":self.item,
+						"gatepass":self.name
+					}
+					
+					frappe.sendmail(template='dispatched',recipients=self.vendor_email,subject="Material Dispatched",args=args)
 
 			
 

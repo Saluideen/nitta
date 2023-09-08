@@ -34,13 +34,16 @@
   "vehicle_details",
   "registration_number",
   "courier_details_section",
+  "courier_company",
+  "column_break_fndk4",
   "courier_number",
   "workflow_tab",
   "workflow",
+  "next_approved_by",
   "status",
+  "section_break_hrvmz",
   "department",
   "division",
-  "next_approved_by",
   "department_store"
  ],
  "fields": [
@@ -73,7 +76,7 @@
   },
   {
    "fieldname": "phone",
-   "fieldtype": "Data",
+   "fieldtype": "Phone",
    "hidden": 1,
    "label": "Phone"
   },
@@ -164,7 +167,7 @@
    "fieldname": "item_state",
    "fieldtype": "Select",
    "hidden": 1,
-   "label": "Item State",
+   "label": "Gatepass Status",
    "options": "Select\nPartially Completed\nClose"
   },
   {
@@ -225,13 +228,28 @@
    "fieldname": "courier_number",
    "fieldtype": "Data",
    "hidden": 1,
-   "label": "Courier Number"
+   "label": "Courier Tracking Number"
+  },
+  {
+   "fieldname": "section_break_hrvmz",
+   "fieldtype": "Section Break",
+   "hidden": 1
+  },
+  {
+   "fieldname": "column_break_fndk4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "courier_company",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Courier Company"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-07 16:54:33.304768",
+ "modified": "2023-09-08 16:22:50.493200",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Return Data",

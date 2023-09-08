@@ -183,7 +183,8 @@
   },
   {
    "fieldname": "section_break_obkha",
-   "fieldtype": "Section Break"
+   "fieldtype": "Section Break",
+   "hidden": 1
   },
   {
    "fieldname": "department",
@@ -298,6 +299,7 @@
   {
    "fieldname": "courier_company",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Courier Company"
   },
   {
@@ -314,7 +316,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-09-08 10:27:08.832475",
+ "modified": "2023-09-08 17:29:05.277493",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",
