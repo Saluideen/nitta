@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_copy": 1,
  "allow_rename": 1,
  "autoname": "field:designation",
  "creation": "2023-08-17 15:52:43.721219",
@@ -18,9 +19,10 @@
    "unique": 1
   }
  ],
+ "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-17 16:00:38.289088",
+ "modified": "2023-09-07 11:10:39.682603",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Designation",

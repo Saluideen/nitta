@@ -63,7 +63,14 @@ def get_column():
 		"label": "Work To be done",
 		"fieldtype": "Data",	
 		"width": 150
-	},{
+	},
+	{
+		"fieldname": "dispatched_date",
+		"label": "Date:of Dispatch ",
+		"fieldtype": "Date",	
+		"width": 150
+	},
+	{
 		"fieldname": "expected_delivery_date",
 		"label": "Expected Delivery Date ",
 		"fieldtype": "Date",	
@@ -96,7 +103,7 @@ def get_data(filters):
 
 
 	gate_pass_details =frappe.db.sql("""
-		select gate_pass.name,gate_pass.division,gate_pass.department,gate_pass.owner,gate_pass.vendor,
+		select gate_pass.name,gate_pass.division,gate_pass.department,gate_pass.owner,gate_pass.vendor,gate_pass.from_date,
 		pdt.pdt_name as item,
 		pdt.work_to_be_done,
 		pdt.quantity,
@@ -124,7 +131,8 @@ def get_data(filters):
 			'expected_delivery_date':gate_pass.expected_delivery_date,
 			'vendor':gate_pass.vendor,
 			'delay':gate_pass.delay,
-			'remaining':gate_pass.remaining
+			'remaining':gate_pass.remaining,
+			'dispatched_date':gate_pass.from_date
 			
 
 		})

@@ -9,7 +9,7 @@
  "filters": [],
  "idx": 0,
  "is_standard": "Yes",
- "modified": "2023-08-30 14:23:07.988739",
+ "modified": "2023-09-07 16:40:57.953113",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Delayed Gate Pass Report",
@@ -30,9 +30,6 @@
   },
   {
    "role": "HOD"
-  },
-  {
-   "role": "Security"
   }
  ]
 }

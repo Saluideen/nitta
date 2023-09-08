@@ -26,6 +26,8 @@ class NittaGatePass(Document):
 		if self.way_of_dispatch is None and d['department']=="Security":
 			frappe.throw("Please Select Way of Dispatch")
 
+		
+
 	def before_save(self):
 		doc= self.get_doc_before_save()
 		if(doc):
@@ -34,11 +36,17 @@ class NittaGatePass(Document):
 					self.workflow_name=None
 					self.approval_flow=[]
 					self.set_workflow()
-		else:
-			self.set_workflow()
+					self.set_gatepass_no()
+			elif doc.status=="Draft" and self.status!=doc.status:
+					self.set_gatepass_no()
+		
 
 	
-	# def after_insert(self):
+	def after_insert(self):
+		self.set_workflow()
+		self.set_gatepass_no()
+		self.save()
+
 	# 	self.doc_name=self.name
 	# 	self.set_workflow()
 	# 	self.save(ignore_permissions=True)
@@ -79,7 +87,7 @@ class NittaGatePass(Document):
 			
 			workflow_transitions=get_workflow_transition(self.workflow_name,self.department,self.division)
 			for transition in workflow_transitions['data']:
-				
+					
 				
 				self.append("workflow", {'role': transition['role'],
 						'employee': transition['user'],
@@ -114,6 +122,7 @@ class NittaGatePass(Document):
 	
 
 	def update_workflow(self):
+		emergency_dispatch_reminder()
 		
 		self.current_approval_level=0
 		self.max_approval_level=0
@@ -238,10 +247,24 @@ class NittaGatePass(Document):
 				self.update_updated_date(current_user_index)
 			
 		self.db_update()
+
+	def set_gatepass_no(self):
+		# Get Division Code
+		division=frappe.get_doc("Division",self.division)
+		# Get Department Code
+		department=frappe.get_doc("Department",self.department)
+		# Get count
+		count=frappe.db.count(self.doctype,{'division':self.division,'department':self.department,'status':['!=','Draft']})
+		if not self.status == 'Draft':
+			self.gate_pass_no='NT'+'-'+'GP'+'/'+division.division+'/'+department.department+'/'+str(count+1)
+		else:
+			self.gate_pass_no='NF'+'/'+division.division+'/'+department.department+'/'+self.name
+
 	
 
 @frappe.whitelist()
 def get_workflow_transition(workflow_name,department,division):
+
 	
 	transitions=frappe.get_all('Transition Rule',filters={'parent':workflow_name,'parenttype':'Nitta Workflow'},fields=['role','department'],order_by='idx')	
 	data=[]
@@ -252,8 +275,10 @@ def get_workflow_transition(workflow_name,department,division):
 			employee_department=transition.department
 		
 		user_role=frappe.db.sql("""
-		SELECT er.role,er.division,er.department,e.user as employee FROM `tabEmployee` e INNER JOIN `tabEmployee Role`er ON er.parent=e.name WHERE e.enabled =1 AND er.role=%(role)s AND (er.division=%(division)s ) AND (er.department=%(department)s or er.department='Administration')
+		SELECT er.role,er.division,er.department,e.user as employee FROM `tabEmployee` e INNER JOIN `tabEmployee Role` er ON er.parent=e.name
+		 WHERE e.enabled =1 AND er.role=%(role)s AND er.division=%(division)s  AND er.department=%(department)s 
 		""",values={'role': transition.role, 'division': division, 'department': employee_department},as_dict=1)	
+		print("user",transition.role)
 	
 	
 		# user_role = frappe.db.sql("""
@@ -261,7 +286,7 @@ def get_workflow_transition(workflow_name,department,division):
 		# WHERE roles = %(role)s AND division = %(division)s AND department = %(department)s
 		# """, values={'role': transition.role, 'division': division, 'department': employee_department},as_dict=1)
 		if user_role:  # Check if user_role list is not empty
-			data.append({'role': user_role[0].roles,'division': user_role[0].division, 'user': user_role[0].user, 'department': user_role[0].department})
+			data.append({'role': user_role[0].role,'division': user_role[0].division, 'user': user_role[0].employee, 'department': user_role[0].department})
 
 	
 	
@@ -347,8 +372,9 @@ def notify_Initiator(shared_by,doctype,doc_name):
 
 @frappe.whitelist()
 def get_employee_details(name):
-	return frappe.db.sql("""SELECT division,department,name,roles,user FROM `tabEmployee` 
-	WHERE  email=%(name)s""",values={'name':name},as_dict=1)
+	return frappe.db.sql("""SELECT role.division,role.department,employee.name,role.role,employee.user FROM `tabEmployee` employee inner join `tabEmployee Role` role 
+	on employee.name=role.parent
+	WHERE  employee.email=%(name)s""",values={'name':name},as_dict=1)
 
 
 # send reminder for emergency dispatch approval

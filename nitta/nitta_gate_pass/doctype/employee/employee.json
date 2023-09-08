@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_copy": 1,
  "allow_rename": 1,
  "autoname": "format:{NT}-{EMP}-{####}",
  "creation": "2023-08-17 16:08:12.726625",
@@ -9,36 +10,25 @@
  "engine": "InnoDB",
  "field_order": [
   "employee_name",
-  "department",
   "column_break_qvujv",
-  "division",
-  "roles",
-  "section_break_gfrdg",
   "email",
+  "section_break_gfrdg",
+  "user_name",
+  "password",
+  "column_break_lsf2o",
   "phone_number",
   "user",
-  "password",
   "enabled",
   "role_tab",
-  "role"
+  "roles"
  ],
  "fields": [
   {
    "fieldname": "employee_name",
    "fieldtype": "Data",
-   "label": "Name"
-  },
-  {
-   "fieldname": "department",
-   "fieldtype": "Link",
-   "label": "Department",
-   "options": "Department"
-  },
-  {
-   "fieldname": "division",
-   "fieldtype": "Link",
-   "label": "Division",
-   "options": "Division"
+   "in_list_view": 1,
+   "label": "Name",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_qvujv",
@@ -51,7 +41,9 @@
   {
    "fieldname": "email",
    "fieldtype": "Data",
-   "label": "Email"
+   "in_list_view": 1,
+   "label": "Email",
+   "reqd": 1
   },
   {
    "fieldname": "phone_number",
@@ -67,14 +59,10 @@
   },
   {
    "fieldname": "password",
-   "fieldtype": "Data",
-   "label": "Password"
-  },
-  {
-   "fieldname": "roles",
-   "fieldtype": "Link",
-   "label": "Designation",
-   "options": "Designation"
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "Password",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -88,15 +76,26 @@
    "label": "Role"
   },
   {
-   "fieldname": "role",
+   "fieldname": "user_name",
+   "fieldtype": "Data",
+   "label": "User Name"
+  },
+  {
+   "fieldname": "column_break_lsf2o",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "roles",
    "fieldtype": "Table",
    "label": "Role",
-   "options": "Employee Role"
+   "options": "Employee Role",
+   "reqd": 1
   }
  ],
+ "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-06 16:59:00.649536",
+ "modified": "2023-09-07 11:09:37.035360",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Employee",

@@ -188,12 +188,12 @@ def get_workflow_transition(workflow_name,department,division):
 		else:
 			employee_department=transition.department
 	
-		user_role = frappe.db.sql("""
-		SELECT roles, division, department, user FROM `tabEmployee`
-		WHERE roles = %(role)s AND division = %(division)s AND department = %(department)s
-		""", values={'role': transition.role, 'division': division, 'department': employee_department},as_dict=1)
+		user_role=frappe.db.sql("""
+		SELECT er.role,er.division,er.department,e.user as employee FROM `tabEmployee` e INNER JOIN `tabEmployee Role` er ON er.parent=e.name
+		 WHERE e.enabled =1 AND er.role=%(role)s AND er.division=%(division)s  AND er.department=%(department)s 
+		""",values={'role': transition.role, 'division': division, 'department': employee_department},as_dict=1)
 		if user_role:  # Check if user_role list is not empty
-			data.append({'role': user_role[0].roles,'division': user_role[0].division, 'user': user_role[0].user, 'department': user_role[0].department})
+			data.append({'role': user_role[0].role,'division': user_role[0].division, 'user': user_role[0].employee, 'department': user_role[0].department})
 
 	
 	
@@ -251,7 +251,8 @@ def get_gatepass_details(gate_pass):
 
 @frappe.whitelist()
 def get_employee_details(name):
-	employee_details=frappe.db.sql("""select * from `tabEmployee` where user=%(name)s""",
+	employee_details=frappe.db.sql("""select er.department from `tabEmployee` em inner join
+	`tabEmployee Role` er on em.name=er.parent where user=%(name)s""",
 	values={'name':name},as_dict=1)
 	return employee_details
 
@@ -272,8 +273,8 @@ def delay_reminder():
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
         
         
-		where gate_pass.status !="Close" and DATEDIFF(CURDATE(), pdt.expected_delivery_date)='72' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='152' or
-		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='366' """,as_dict=1)
+		where gate_pass.status !="Close" and DATEDIFF(CURDATE(), pdt.expected_delivery_date)='36' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='36' or
+		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='37' """,as_dict=1)
 	# Create a dictionary to group items based on vendor_email
 	vendor_items = {}
 	division_group={}
@@ -313,6 +314,8 @@ def delay_reminder():
 		finance_head_email_data = get_finance_head_email(division)
 		if finance_head_email_data:
 			finance_head_email=finance_head_email_data[0]['email']
+		else:
+			frappe.throw("Employee Not Found in Finance Department")
 
 		# Prepare the message for the email
 		items_table = ""
@@ -430,7 +433,9 @@ def delay_reminder():
 
 
 def get_finance_head_email(division):
-	finance_head_email= frappe.db.sql("""select email from `tabEmployee` where division=%(division)s and department='Finance' and roles='HOD' """,
+	finance_head_email= frappe.db.sql("""select em.email from `tabEmployee` em 
+	inner join `tabEmployee Role` er on em.name=er.parent  where er.division=%(division)s and er.department='Finance' and er.role='HOD' """,
 	values={'division':division},as_dict=1)
+	print("finance_head_email",finance_head_email)
 	return finance_head_email
 

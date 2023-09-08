@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_copy": 1,
  "allow_rename": 1,
  "autoname": "field:vendor_name",
  "creation": "2023-08-18 11:45:22.140193",
@@ -51,9 +52,10 @@
    "label": "Address"
   }
  ],
+ "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-21 11:27:46.174091",
+ "modified": "2023-09-07 11:11:56.432425",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Vendor",

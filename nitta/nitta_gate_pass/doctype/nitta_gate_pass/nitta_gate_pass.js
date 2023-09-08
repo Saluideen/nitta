@@ -3,15 +3,16 @@
 
 frappe.ui.form.on("Nitta Gate Pass", {
   refresh: function (frm) {
-  //  hide connection + icon
+    //  hide connection + icon
     $(".btn.btn-new.btn-secondary.btn-xs.icon-btn").hide();
     // hide connection based on status
-    if (frm.doc.status !== "Dispatched" && frm.doc.status !== "Partially Completed" && frm.doc.status !== "Close") {
+    if (
+      frm.doc.status !== "Dispatched" &&
+      frm.doc.status !== "Partially Completed" &&
+      frm.doc.status !== "Close"
+    ) {
       frm.dashboard.hide();
-  }
-  
-   
-
+    }
 
     // Check if the date field is empty before setting the current date
     if (!frm.doc.from_date) {
@@ -20,10 +21,93 @@ frappe.ui.form.on("Nitta Gate Pass", {
     }
 
     if (roles.includes("Security")) {
-      frm.set_df_property("way_of_dispatch", "hidden", 0);
+      
     }
+
+    //set initiator  department nd division and hide workflow and product table
+    frm.events.set_initiator_data(frm);
+
+    // hide is_emergency field
+    frm.events.hide_emergency(frm);
+
+    // Initiate only creator. initiate button function
+    frm.events.initiate(frm);
+    //disable save and form based  on conditions
+    frm.events.disable_forms(frm);
+    //  hide  fields of security role
+    frm.events.hide_security_fields(frm);
+
+    //  Approve & Reject  button
+    frm.events.approve_reject(frm);
+  },
+
+  way_of_dispatch: function (frm) {
+    let way_of_dispatch = frm.doc.way_of_dispatch;
+    if (way_of_dispatch == "By Hand") {
+      frm.set_df_property("recipient", "hidden", 0);
+      frm.set_df_property("phone", "hidden", 0);
+      frm.set_df_property("courier_number", "hidden", 1);
+      frm.set_df_property("courier_company", "hidden", 1);
+      frm.set_df_property("driver_name", "hidden", 1);
+      frm.set_df_property("contact_number", "hidden", 1);
+      frm.set_df_property("registration_number", "hidden", 1);
+    } else if (way_of_dispatch == "Vehicle") {
+      frm.set_df_property("driver_name", "hidden", 0);
+      frm.set_df_property("contact_number", "hidden", 0);
+      frm.set_df_property("registration_number", "hidden", 0);
+      frm.set_df_property("recipient", "hidden", 1);
+      frm.set_df_property("phone", "hidden", 1);
+      frm.set_df_property("courier_number", "hidden", 1);
+      frm.set_df_property("courier_company", "hidden", 1);
+    } else {
+      frm.set_df_property("courier_company", "hidden", 0);
+      frm.set_df_property("courier_number", "hidden", 0);
+      frm.set_df_property("driver_name", "hidden", 1);
+      frm.set_df_property("contact_number", "hidden", 1);
+      frm.set_df_property("registration_number", "hidden", 1);
+      frm.set_df_property("recipient", "hidden", 1);
+      frm.set_df_property("phone", "hidden", 1);
+    }
+  },
+
+  uploadPrivateFile: async function (frm) {
+    let file_doc = await new Promise((resolve, reject) => {
+      new frappe.ui.FileUploader({
+        doctype: frm.doctype,
+        docname: frm.docname,
+        allow_multiple: false,
+        restrictions: {
+          allowed_file_types: [".png", ".jpeg", ".jpg"],
+        },
+        folder: "Home/Attachments",
+        on_success: (file_doc) => {
+          console.log("file doc.", file_doc);
+          if (file_doc.file_url.includes("/private/")) {
+            resolve(file_doc);
+          } else {
+            frappe.call({
+              method:
+                "nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.remove_file_backgroud",
+              args: {
+                files: [file_doc.name],
+              },
+              freeze: true,
+              callback: (r) => {
+                frappe.msgprint("select Private file");
+              },
+              error: (r) => {
+                frappe.msgprint(r);
+              },
+            });
+          }
+        },
+      });
+    });
+    return file_doc;
+  },
+  //////////////////////////////////// Custom methods ////////////////////////////////////
+  set_initiator_data: function (frm) {
     if (frm.is_new()) {
-      //set initiator  department nd division
       frappe.call({
         method:
           "nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.get_employee_details",
@@ -45,27 +129,47 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_df_property("workflow", "hidden", 1);
       frm.set_df_property("next_approved_by", "hidden", 1);
       frm.set_df_property("status", "hidden", 1);
-    }
+      frm.set_df_property("item", "hidden", 1);
 
-    else {
-     
+    } else {
       frm.set_df_property("workflow_name", "hidden", 0);
       frm.set_df_property("workflow", "hidden", 0);
       frm.set_df_property("next_approved_by", "hidden", 0);
       frm.set_df_property("status", "hidden", 0);
+      frm.set_df_property("item", "hidden", 0);
     }
-
-    // Initiate only creator.
-    if (!frm.is_new() && frm.doc.status == "Draft" && roles.includes("User")) {
-      cur_frm.page.add_action_item("Initiate", function () {
-        frm.doc.status = "Initiated";
-        frm.refresh_field("status");
-        frm.dirty();
-        frm.save();
-      });
-      frm.change_custom_button_type("Initiate", null, "primary");
+  },
+  hide_emergency: function (frm) {
+    if (frm.doc.status == "Initiated" && frm.doc.is_emergency != 1) {
+      frm.set_df_property("is_emergency", "hidden", 1);
     }
-
+  },
+  initiate: function (frm) {
+   
+      var itemTable = frm.doc.item; 
+      if (itemTable && itemTable.length > 0) {
+        if (!frm.is_new() && frm.doc.status === "Draft" && roles.includes("User")) {
+        // The child table is not empty, so show the "Initiate" button
+        frm.set_df_property("item", "hidden", 0);
+        cur_frm.page.add_action_item("Initiate", function () {
+          frm.doc.status = "Initiated";
+          frm.refresh_field("status");
+          frm.dirty();
+          frm.save();
+          
+        });
+        frm.change_custom_button_type("Initiate", null, "primary");
+      } 
+    }
+    
+  },
+  disable_forms: function (frm) {
+    console.log("hide",frm.doc.status);
+    if(frm.doc.status=="Initiated"){
+      frm.disable_save()
+          frm.disable_form()
+    }
+    
     if (frm.doc.status != "Draft" && !roles.includes("Security")) {
       frm.disable_save();
       frm.disable_form();
@@ -79,14 +183,19 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.disable_save();
       frm.disable_form();
     }
+  },
+  hide_security_fields: function (frm) {
     if (roles.includes("Security")) {
       frm.set_df_property("from_date", "read_only", 1);
       frm.set_df_property("is_emergency", "read_only", 1);
       frm.set_df_property("vendor", "read_only", 1);
       frm.set_df_property("item", "read_only", 1);
       frm.set_df_property("workflow", "read_only", 1);
+      frm.set_df_property("way_of_dispatch", "hidden", 0);
     }
-
+    
+  },
+  approve_reject: function (frm) {
     if (
       frm.doc.next_approved_by == frappe.session.user &&
       frm.doc.status != "Dispatched" &&
@@ -118,58 +227,6 @@ frappe.ui.form.on("Nitta Gate Pass", {
       }
     }
   },
-  way_of_dispatch: function (frm) {
-    
-    frm.refresh();
-    let way_of_dispatch = frm.doc.way_of_dispatch;
-    if (way_of_dispatch == "By Hand") {
-      frm.set_df_property("recipient", "hidden", 0);
-      frm.set_df_property("phone", "hidden", 0);
-    } else if (way_of_dispatch == "Vehicle") {
-      frm.set_df_property("driver_name", "hidden", 0);
-      frm.set_df_property("contact_number", "hidden", 0);
-      frm.set_df_property("registration_number", "hidden", 0);
-      frm.set_df_property("recipient", "hidden", 1);
-      frm.set_df_property("phone", "hidden", 1);
-    }
-  },
-
-
-  uploadPrivateFile: async function (frm) {
-		let file_doc = await new Promise((resolve, reject) => {
-			new frappe.ui.FileUploader({
-				doctype: frm.doctype,
-				docname: frm.docname,
-				allow_multiple: false,
-				restrictions: {
-					allowed_file_types: [".png", ".jpeg",".jpg"]
-				},
-				folder: 'Home/Attachments',
-				on_success: (file_doc) => {
-					if (file_doc.file_url.includes('/private/')) {
-						resolve(file_doc);
-					} else {
-						frappe.call({
-							method: 'nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.remove_file_backgroud',
-							args: {
-								files: [file_doc.name],
-							},
-							freeze: true,
-							callback: (r) => {
-								frappe.msgprint("select Private file")
-							},
-							error: (r) => {
-								frappe.msgprint(r)
-							}
-						})
-					}
-				}
-			});
-		});
-		return file_doc;
-	},
-
-
 });
 frappe.ui.form.on("Nitta item", {
   quantity: function (frm, cdt, cdn) {
@@ -183,10 +240,8 @@ frappe.ui.form.on("Nitta item", {
     window.open(child.attachment);
   },
   upload: async function (frm, cdt, cdn) {
-		
-			let file_doc = await frm.events.uploadPrivateFile(frm);
-			frappe.model.set_value(cdt, cdn, "attachment", file_doc.file_url);
-			frappe.model.set_value(cdt, cdn, "file_name", file_doc.name);
-  }
-		
+    let file_doc = await frm.events.uploadPrivateFile(frm);
+    frappe.model.set_value(cdt, cdn, "attachment", file_doc.file_url);
+    frappe.model.set_value(cdt, cdn, "file_name", file_doc.name);
+  },
 });

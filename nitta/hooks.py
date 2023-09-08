@@ -139,7 +139,8 @@ scheduler_events = {
 # 		]
 # 	},
 	"daily": [
-		"nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.emergency_dispatch_reminder"
+		"nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.emergency_dispatch_reminder",
+		"nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.delay_reminder"
 	],
 #	"hourly": [
 #		"nitta.tasks.hourly"
@@ -147,9 +148,9 @@ scheduler_events = {
 #	"weekly": [
 #		"nitta.tasks.weekly"
 #	],
-	"monthly": [
-		"nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.delay_reminder"
-	],
+	# "monthly": [
+	# 	"nitta.nitta_gate_pass.doctype.nitta_return_data.nitta_return_data.delay_reminder"
+	# ],
 }
 
 # Testing

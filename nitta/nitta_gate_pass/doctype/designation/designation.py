@@ -5,4 +5,7 @@
 from frappe.model.document import Document
 
 class Designation(Document):
-	pass
+	def validate(self):
+		new_role=frappe.new_doc('Role')
+		new_role.role_name=self.role
+		new_role.save(ignore_permissions=True)

@@ -3,12 +3,13 @@
 
 frappe.ui.form.on('Employee', {
 	refresh: function(frm) {
-		frm.set_query("department", function () {
+		frm.fields_dict['roles'].grid.get_field('department').get_query = function (doc, cdt, cdn) {
+			var child = locals[cdt][cdn];
+		
 			return {
-			 
-			  filters: { department: ["not in", ["FROM GATEPASS"]] },
+				filters: [['name', 'not in', ['FROM GATEPASS']]]
 			};
-		  });
-
-	}
+		}
+		
+}
 });

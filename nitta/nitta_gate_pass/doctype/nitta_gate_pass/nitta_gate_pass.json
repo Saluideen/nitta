@@ -34,6 +34,10 @@
   "contact_number",
   "vehicle_details_section",
   "registration_number",
+  "courier_details_section",
+  "courier_company",
+  "column_break_dfwib",
+  "courier_number",
   "workflow_tab",
   "workflow_name",
   "workflow",
@@ -46,6 +50,7 @@
   "division",
   "user",
   "role",
+  "gate_pass_no",
   "return_details_tab",
   "quantity",
   "current_department"
@@ -55,7 +60,8 @@
    "fieldname": "vendor",
    "fieldtype": "Link",
    "label": "Vendor",
-   "options": "Vendor"
+   "options": "Vendor",
+   "reqd": 1
   },
   {
    "fieldname": "way_of_dispatch",
@@ -72,7 +78,7 @@
   },
   {
    "fieldname": "product_tab",
-   "fieldtype": "Section Break",
+   "fieldtype": "Tab Break",
    "label": "Product Details"
   },
   {
@@ -177,8 +183,7 @@
   },
   {
    "fieldname": "section_break_obkha",
-   "fieldtype": "Section Break",
-   "hidden": 1
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "department",
@@ -274,6 +279,31 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Current Department"
+  },
+  {
+   "fieldname": "courier_details_section",
+   "fieldtype": "Section Break",
+   "label": "Courier Details"
+  },
+  {
+   "fieldname": "courier_number",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Courier Tracking Number"
+  },
+  {
+   "fieldname": "column_break_dfwib",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "courier_company",
+   "fieldtype": "Data",
+   "label": "Courier Company"
+  },
+  {
+   "fieldname": "gate_pass_no",
+   "fieldtype": "Data",
+   "label": "Gatepass No"
   }
  ],
  "hide_toolbar": 1,
@@ -284,7 +314,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-09-06 17:08:40.818854",
+ "modified": "2023-09-08 10:27:08.832475",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",
@@ -304,8 +334,10 @@
    "write": 1
   }
  ],
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
+ "title_field": "gate_pass_no",
  "track_changes": 1
 }
