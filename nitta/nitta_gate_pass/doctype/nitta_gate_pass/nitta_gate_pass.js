@@ -7,6 +7,10 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_df_property("way_of_dispatch", "hidden", 0);
 
     }
+    else{
+      frm.disable_save()
+      frm.disable_form()
+    }
     //  hide connection + icon
     $(".btn.btn-new.btn-secondary.btn-xs.icon-btn").hide();
     // hide connection based on status
@@ -204,11 +208,11 @@ frappe.ui.form.on("Nitta Gate Pass", {
   },
   disable_forms: function (frm) {
   
-    if (frm.doc.status == "Initiated" && !roles.includes("Security")) {
-      frm.disable_save();
-      frm.disable_form();
-    }
-    c
+    // if (frm.doc.status == "Initiated" && !roles.includes("Security") ) {
+    //   frm.disable_save();
+    //   frm.disable_form();
+    // }
+    
 
     if (frm.doc.status != "Draft" && !roles.includes("Security")) {
       frm.disable_save();
@@ -226,6 +230,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
   },
   hide_security_fields: function (frm) {
     if (roles.includes("Security")) {
+      frm.set_df_property("way_of_dispatch", "hidden", 0);
       
 
       frm.set_df_property("from_date", "read_only", 1);

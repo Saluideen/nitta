@@ -61,7 +61,8 @@
   {
    "fieldname": "remaining",
    "fieldtype": "Float",
-   "label": "Remaining"
+   "label": "Remaining",
+   "non_negative": 1
   },
   {
    "fieldname": "download",
@@ -89,7 +90,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-08 12:12:58.138017",
+ "modified": "2023-09-08 21:21:25.041351",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta item",
