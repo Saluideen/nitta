@@ -112,7 +112,7 @@ def get_data(filters):
 		DATEDIFF(CURDATE(), pdt.expected_delivery_date) AS delay
 
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
-		where gate_pass.status !="Close" and pdt.expected_delivery_date<CURDATE()
+		where gate_pass.status !="Close" and gate_pass.status !="Rejected" and pdt.expected_delivery_date<CURDATE() and pdt.status!='Completed' and pdt.status!='Assembled'
         AND (gate_pass.department = %(department)s OR %(department)s = '')
         AND (gate_pass.division = %(division)s OR %(division)s = '') 
 		

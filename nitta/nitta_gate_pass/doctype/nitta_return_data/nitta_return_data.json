@@ -12,6 +12,8 @@
   "section_break_wyuux",
   "from_date",
   "column_break_yzgum",
+  "if_delivery_chellan",
+  "delivery_chellan",
   "gate_pass",
   "vendor_details_section",
   "vendor_name",
@@ -106,14 +108,16 @@
    "fieldname": "vendor_name",
    "fieldtype": "Link",
    "label": "Name",
-   "options": "Vendor"
+   "options": "Vendor",
+   "read_only": 1
   },
   {
    "default": "Draft",
    "fieldname": "status",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "status"
+   "label": "status",
+   "read_only": 1
   },
   {
    "fieldname": "workflow_tab",
@@ -151,13 +155,15 @@
    "fetch_from": "vendor_name.email",
    "fieldname": "vendor_email",
    "fieldtype": "Data",
-   "label": "Email"
+   "label": "Email",
+   "read_only": 1
   },
   {
    "fetch_from": "vendor_name.vendor_phone",
    "fieldname": "vendor_contact",
    "fieldtype": "Data",
-   "label": "Contact Number"
+   "label": "Contact Number",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_yzgum",
@@ -186,7 +192,8 @@
   {
    "fieldname": "next_approved_by",
    "fieldtype": "Data",
-   "label": "Next Approved By"
+   "label": "Next Approved By",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_wyuux",
@@ -244,12 +251,24 @@
    "fieldtype": "Data",
    "hidden": 1,
    "label": "Courier Company"
+  },
+  {
+   "fieldname": "delivery_chellan",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Delivery Chellan Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "if_delivery_chellan",
+   "fieldtype": "Check",
+   "label": "If Delivery Chellan"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-08 16:22:50.493200",
+ "modified": "2023-09-11 12:06:42.144870",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Return Data",

@@ -1,7 +1,7 @@
 // Copyright (c) 2023, Ideenkreise and contributors
 // For license information, please see license.txt
 // Declare department_store globally
-
+let s_department;
 frappe.ui.form.on("Nitta Return Data", {
   refresh: function (frm) {
     // Check if the date field is empty before setting the current date
@@ -20,7 +20,57 @@ frappe.ui.form.on("Nitta Return Data", {
     frm.events.approve_button(frm);
     //  apply filter in department field
     frm.events.department_filter(frm);
+    // hide child table completed row
+    frm.events.hide_child_row(frm);
+    // filter for workflow employee
+    frm.events.set_employee_filter(frm)
+  //  hide child table add row button
+    $(".grid-add-row").hide();
+// Hide delivery chellan details
+    frm.events.hide_delivery_chellan(frm)
+ 
+   
   },
+  //  show alert box when gatepass status change
+ 
+   validate:function(frm){
+    
+   if(s_department=="Store"){
+    var itemState = frm.doc.item_state;
+    // Show an alert box when the item_state field changes
+    return new Promise(function (resolve, reject) {
+      frappe.confirm(
+        'Gatepass Status: ' + itemState + '<br><br> Do you want to save the changes?',
+        function() {
+          var negative = 'frappe.validated = false';
+          resolve(negative);
+        },
+        function() {
+          reject();
+        }
+    );
+    })
+   
+    
+
+
+   }
+   
+   },
+    // update delivery chellan
+    if_delivery_chellan:function(frm){
+     
+      if(frm.doc.if_delivery_chellan=='1'){
+        frm.set_df_property("delivery_chellan", "hidden", 0);
+  
+    
+      }
+      if(frm.doc.if_delivery_chellan=='0')
+      {
+        frm.set_df_property("delivery_chellan", "hidden", 1);
+      }
+  
+     },
 
   // hide fields
   way_of_return: function (frm) {
@@ -88,6 +138,7 @@ frappe.ui.form.on("Nitta Return Data", {
             expected_delivery_date: el.expected_delivery_date,
             item_name: el.name,
             previous_remaining: el.remaining,
+            status:el.status
           });
 
           frm.refresh_field("product");
@@ -100,7 +151,60 @@ frappe.ui.form.on("Nitta Return Data", {
       },
     });
   },
-  ////////////////////////////////////////custom functions///////////////////////////////////////////////////////
+
+  ////////////////////////////////////////custom functions///////////////////////////////////////////////////////\
+  hide_delivery_chellan: function (frm) {
+    if(frm.doc.if_delivery_chellan=='1'){
+      frm.set_df_property("delivery_chellan", "hidden", 0);
+
+  
+    }
+    else
+    {
+      frm.set_df_property("delivery_chellan", "hidden", 1);
+    }
+    // if ((roles.includes("Security"))) {
+    //   frm.set_df_property("if_delivery_chellan", "hidden", 0);
+    // } else if (frm.doc.status != "Draft" && frm.doc.if_delivery_chellan != '1') {
+    //   frm.set_df_property("if_delivery_chellan", "hidden", 1);
+    // }
+    // else {
+    //   frm.set_df_property("delivery_chellan", "hidden", 0);
+    // }
+  },
+  set_employee_filter: function (frm) {
+    frm.fields_dict["workflow"].grid.get_field("employee").get_query =
+      function (doc, cdt, cdn) {
+        var child = locals[cdt][cdn];
+
+        return {
+          query:
+            "nitta.nitta_gate_pass.doctype.nitta_workflow.nitta_workflow.get_employee",
+          filters: {
+            division: child.division,
+            department: child.department,
+            role: child.role,
+          },
+        };
+      };
+  },
+  
+  hide_child_row:function(frm){
+    let non_editable_fields = ['item', 'work_to_be_done', 'return_quantity', 'status', 'remark']
+		frm.fields_dict['product'].grid.grid_rows.forEach((grid_row) => {
+			if (grid_row.doc.status === "Completed") {
+
+				grid_row.docfields.forEach((df) => {
+					if (non_editable_fields.includes(df.fieldname)) {
+						df.read_only = 1;
+
+					}
+				});
+			}
+		});
+
+		refresh_field('product')
+  },
   store_department: function (frm) {
     frappe.call({
       method:
@@ -110,12 +214,19 @@ frappe.ui.form.on("Nitta Return Data", {
         name: frappe.session.user,
       },
       callback: function (r) {
+        s_department=r.message[0].department;
+        
         if (r.message[0].department == "Store") {
+          // frm.fields_dict['product'].grid.get_field('status').reqd = 1;
+          // frm.refresh_field('product');
           frm.set_df_property("item_state", "hidden", 0);
           frm.set_df_property("from_date", "read_only", 1);
           frm.set_df_property("vendor_name", "read_only", 1);
           frm.set_df_property("workflow", "read_only", 1);
           frm.set_df_property("product", "read_only", 0);
+          frm.set_df_property("delivery_chellan", "read_only", 1);
+          frm.set_df_property("if_delivery_chellan", "read_only", 1);
+          frm.set_df_property("gate_pass", "read_only", 1);
         }
         if (frm.doc.status !== "Draft" && r.message[0].department != "Store") {
           frm.disable_save();
@@ -148,7 +259,7 @@ frappe.ui.form.on("Nitta Return Data", {
       frm.set_df_property("product", "hidden", 1);
       frm.set_df_property("from_date", "read_only", 1);
       frm.set_df_property("vendor_name", "read_only", 1);
-      frm.set_df_property("workflow", "read_only", 1);
+      // frm.set_df_property("workflow", "read_only", 1);
     }
   },
   approve_button: function (frm) {
@@ -174,6 +285,8 @@ frappe.ui.form.on("Nitta Return Data", {
       };
     });
   },
+
+  
 });
 frappe.ui.form.on("Return product Details", {
   return_quantity: function (frm, cdt, cdn) {
@@ -190,4 +303,45 @@ frappe.ui.form.on("Return product Details", {
       frappe.model.set_value(cdt, cdn, "remaining_quantity", previous);
     }
   },
+  status:function (frm, cdt, cdn) {
+    var row = locals[cdt][cdn];
+    let status=undefined
+    let i =frm.doc.product.findIndex((el)=>{return el.status=="Partially Completed"})
+    
+    let close=frm.doc.product.findIndex((el)=>{return el.status=="Completed" || el.status=="Assembled"}) 
+    let id =frm.doc.product.findIndex((el)=>{return el.status==""})
+    if(i>-1){
+      status='Partially Completed'
+    }
+    else if(close>-1){
+      status='Close'
+    }
+
+    
+    else{
+      status='Select'
+    }
+    
+
+
+
+    // Iterate through the status field in the current child table row
+    // row.status.forEach(function(childRow) {
+    //     var status = childRow.status;
+
+    //     // Check the status field for each row and perform actions accordingly
+    //     if (status == 'Completed' || status == 'Assembled') {
+    //         frm.doc.item_state = 'Close';
+    //     } else if (status == 'Partially Completed') {
+    //         frm.doc.item_state = 'Partially Completed';
+    //     } else {
+    //         frm.doc.item_state = 'Select';
+    //     }
+    // });
+
+    frm.doc.item_state = status;
+    frm.refresh_field('item_state');
+    
+
+  }
 });

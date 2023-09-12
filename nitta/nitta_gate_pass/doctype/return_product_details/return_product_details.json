@@ -8,11 +8,12 @@
  "field_order": [
   "item",
   "work_to_be_done",
-  "remarks",
   "item_name",
   "return_quantity",
   "quantity",
   "remaining_quantity",
+  "remarks",
+  "status",
   "sample",
   "previous_remaining"
  ],
@@ -73,12 +74,20 @@
    "fieldname": "previous_remaining",
    "fieldtype": "Data",
    "label": "Previous Remaining"
+  },
+  {
+   "columns": 2,
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "\nAssembled\nCompleted\nPartially Completed"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-08 21:21:50.765966",
+ "modified": "2023-09-12 11:36:28.092859",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Return product Details",

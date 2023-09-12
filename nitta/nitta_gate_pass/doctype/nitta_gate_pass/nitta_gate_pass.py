@@ -3,11 +3,17 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.utils.pdf import get_pdf
+from frappe.utils.file_manager import get_file,download_file,get_file_path,write_file,save_file
+from PyPDF2 import PdfMerger
+from frappe.utils import get_site_path
+import PyPDF2
 from datetime import date,datetime
 from frappe.utils import get_url_to_form
 from frappe.desk.notifications import enqueue_create_notification
 from frappe.share import add as add_share
-from frappe.utils import get_url_to_form
+
+
 from frappe import _
 from frappe.desk.doctype.notification_log.notification_log import (
 	enqueue_create_notification,
@@ -214,6 +220,8 @@ class NittaGatePass(Document):
 				approval_flow = self.workflow[self.current_approval_level]
 				# self.status=l_flow.department+'-' +approval_flow.role +')'+' Rejected'
 				self.status="Rejected"
+				self.next_approved_by=None
+				notify_assignment(self.user,'Nitta Gate Pass',self.name,self.status)
 				if current_user_index>0:
 					self.update_updated_date(current_user_index)
 		elif self.current_approval_level==self.max_approval_level:
@@ -375,7 +383,7 @@ def send_notification(gate_pass,user,next_approved_by,doctype):
 	
 
 	reference_user = get_fullname(user)
-	notification_message = _("Material Dispatched with {0} {1} pls aapprove ").format(
+	notification_message = _("<span style='color: red;'>Material Dispatched with {0}  {1} pls approve </span>").format(
 		 frappe.bold(_(doctype)), get_title_html(title)
 	)
 
@@ -410,3 +418,22 @@ def remove_file_backgroud(files):
 def remove_file(files):
     for file in files:
         frappe.delete_doc("File", file)
+
+
+
+@frappe.whitelist()
+def generate_preview(doctype,docname):
+
+	# Creating and saving the Print format to public files folder
+    html = frappe.get_print(doctype, docname, 'Nitta Preview', doc=None)
+    pdf = get_pdf(html)
+    
+    # Define the file name for the generated PDF
+    pdf_file_name = f'{docname}_preview.pdf'
+    
+    # Save the PDF file to a public location
+    write_file(pdf, pdf_file_name, is_private=0)
+    
+    # Return the URL of the generated PDF for the user to access
+    pdf_file_url = f'/files/{pdf_file_name}'
+    return pdf_file_url

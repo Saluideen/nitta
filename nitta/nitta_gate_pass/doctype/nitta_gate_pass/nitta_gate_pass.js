@@ -7,10 +7,10 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_df_property("way_of_dispatch", "hidden", 0);
 
     }
-    else{
-      frm.disable_save()
-      frm.disable_form()
-    }
+    // else{
+    //   frm.disable_save()
+    //   frm.disable_form()
+    // }
     //  hide connection + icon
     $(".btn.btn-new.btn-secondary.btn-xs.icon-btn").hide();
     // hide connection based on status
@@ -46,7 +46,17 @@ frappe.ui.form.on("Nitta Gate Pass", {
 
     //  Approve & Reject  button
     frm.events.approve_reject(frm);
+     // add preview
+  frm.events.add_preview(frm)
+
+    // hide child table completed row
+
+    // hide child table upload and download button based on gatepass status
+// frm.events.hide_upload_button(frm);
+
   },
+  
+  
 
   way_of_dispatch: function (frm) {
     let way_of_dispatch = frm.doc.way_of_dispatch;
@@ -128,6 +138,43 @@ frappe.ui.form.on("Nitta Gate Pass", {
     return file_doc;
   },
   //////////////////////////////////// Custom methods ////////////////////////////////////
+
+  // hide_upload_button:function(frm){
+    
+  //         // Get the current status of the parent document
+  //         var parent_status = frm.doc.status;
+  
+  //         // Get the child table field
+  //         var child_table = frm.fields_dict['item'].grid;
+  
+  //         // Get the "Upload Image" field and the "Download Image" field in the child table
+  //         frm.fields_dict["item"].grid.set_column_disp("upload",cur_frm.is_new() == 0)
+  //         // var upload_image_field = child_table.get_field('upload');
+  //         // var download_image_field = child_table.get_field('download');
+  
+  //         // Check if the parent status is "Draft" or if the document is new
+  //       //   if (parent_status == 'Draft' || frm.is_new()) {
+  //       //     // Hide the "Download Image" column
+  //       //     download_image_field.in_list_view = 0;
+  //       //     download_image_field.in_form = 0;
+
+  //       //     // Show the "Upload Image" column
+  //       //     upload_image_field.in_list_view = 1;
+  //       //     upload_image_field.in_form = 1;
+  //       // } else {
+  //       //     // Hide the "Upload Image" column
+  //       //     upload_image_field.in_list_view = 0;
+  //       //     upload_image_field.in_form = 0;
+
+  //       //     // Show the "Download Image" column
+  //       //     download_image_field.in_list_view = 1;
+  //       //     download_image_field.in_form = 1;
+  //       // }
+  
+  //        frm.refresh_field("item")
+    
+
+  // },
   set_employee_filter: function (frm) {
     frm.fields_dict["workflow"].grid.get_field("employee").get_query =
       function (doc, cdt, cdn) {
@@ -202,9 +249,9 @@ frappe.ui.form.on("Nitta Gate Pass", {
         frm.change_custom_button_type("Initiate", null, "primary");
       }
     }
-    else{
-      frm.msgprint("Please Enter Material Details")
-    }
+    // else{
+    //   frm.msgprint("Please Enter Material Details")
+    // }
   },
   disable_forms: function (frm) {
   
@@ -230,6 +277,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
   },
   hide_security_fields: function (frm) {
     if (roles.includes("Security")) {
+     
       frm.set_df_property("way_of_dispatch", "hidden", 0);
       
 
@@ -247,7 +295,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.doc.next_approved_by == frappe.session.user &&
       frm.doc.status != "Dispatched" &&
       frm.doc.status != "Close" &&
-      frm.doc.status != "Partially Completed"
+      frm.doc.status != "Partially Completed" &&frm.doc.status !="Rejected"
     ) {
       frm.page.add_action_item("Approve", () => {
         let index = frm.doc.workflow.findIndex(
@@ -274,6 +322,26 @@ frappe.ui.form.on("Nitta Gate Pass", {
       }
     }
   },
+  add_preview:function(frm){
+    frm.add_custom_button(__('Preview '), function() {
+      // Generate and show the PDF using the "nitta" print format
+      frappe.call({
+          method: 'nitta.nitta_gate_pass.doctype.nitta_gate_pass.nitta_gate_pass.generate_preview',
+          args: {
+            doctype: frm.doctype,
+            docname: frm.docname
+          },
+          freeze: true,
+          callback: (r) => {
+            window.open('http://' + window.location.host + '/' + r.message)
+          },
+          error: (r) => {
+            frappe.msgprint(r);
+          }
+      });
+  });
+
+  },
 });
 frappe.ui.form.on("Nitta item", {
   quantity: function (frm, cdt, cdn) {
@@ -287,8 +355,13 @@ frappe.ui.form.on("Nitta item", {
     window.open(child.attachment);
   },
   upload: async function (frm, cdt, cdn) {
-    let file_doc = await frm.events.uploadPrivateFile(frm);
-    frappe.model.set_value(cdt, cdn, "attachment", file_doc.file_url);
-    frappe.model.set_value(cdt, cdn, "file_name", file_doc.name);
+    if(frm.doc.status=="Draft" || frm.is_new())
+    {
+      let file_doc = await frm.events.uploadPrivateFile(frm);
+      frappe.model.set_value(cdt, cdn, "attachment", file_doc.file_url);
+      frappe.model.set_value(cdt, cdn, "file_name", file_doc.name);
+
+    }
+  
   },
 });
