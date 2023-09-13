@@ -28,7 +28,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.set_value("from_date", currentDate);
     }
 
-   
+  
     // Apply filter to workflow employee based on division and department
     frm.events.set_employee_filter(frm);
     //set initiator  department nd division and hide workflow and product table
@@ -265,6 +265,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
       frm.disable_save();
       frm.disable_form();
     }
+    
 
     if (frm.doc.status == "Dispatched" && roles.includes("Security")) {
       frm.disable_save();
@@ -308,7 +309,7 @@ frappe.ui.form.on("Nitta Gate Pass", {
       });
       frm.change_custom_button_type("Approve", null, "primary");
 
-      if (frm.doc.status == "Initiated" && !frm.doc.is_emergency) {
+      if ((frm.doc.status != "Draft" && !frm.doc.is_emergency && !roles.includes("Security")) ) {
         frm.page.add_action_item("Reject", () => {
           let index = frm.doc.workflow.findIndex(
             (el) =>

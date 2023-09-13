@@ -313,13 +313,16 @@ frappe.ui.form.on("Return product Details", {
     if(i>-1){
       status='Partially Completed'
     }
-    else if(close>-1){
-      status='Close'
+    
+    else if(id>-1){
+      status='Select'
+      
     }
 
     
     else{
-      status='Select'
+      status='Close'
+      
     }
     
 

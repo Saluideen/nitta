@@ -2,7 +2,9 @@
 // For license information, please see license.txt
 /* eslint-disable */
 
-frappe.query_reports["Nitta Gate Pass Report"] = {
+frappe.query_reports["Nitta Dashboard"] = {
+	
+
 	"filters": [
 		{
 			"fieldname": "division",
@@ -10,11 +12,11 @@ frappe.query_reports["Nitta Gate Pass Report"] = {
 			"fieldtype": "Link",
 			"options": "Division",
 			// "reqd": 1,
-			// // "get_query": function () {
-			// // 	return {
-			// // 		query: "nitta.nitta_gate_pass.doctype.division.division.get_division",
-			// // 	};
-			// // }
+			// "get_query": function () {
+			// 	return {
+			// 		query: "nitta.nitta_gate_pass.doctype.division.division.get_division",
+			// 	};
+			// }
 			// default:"All"
 
 
@@ -50,16 +52,16 @@ frappe.query_reports["Nitta Gate Pass Report"] = {
 			default: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
 
 		},
-		{
-			"fieldname": "status",
-			"label": __("Status"),
-			"fieldtype": "Link",
-			"options": "Report Status",
-			"reqd": 1,
-			default: 'All'
+		// {
+		// 	"fieldname": "status",
+		// 	"label": __("Status"),
+		// 	"fieldtype": "Link",
+		// 	"options": "Report Status",
+		// 	"reqd": 1,
+		// 	// default: 'All'
 
 
-		},
+		// },
 
 	]
 };

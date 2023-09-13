@@ -90,59 +90,52 @@ def get_column():
 
 def get_data(filters):
 
-	data=[]
-
-	department = filters['department']
-	report_status=filters['report_status']
-	division = filters['division']
-	if(division=='All'):
-		division=''
-	if(department=="All"):
-		department=''
-	if(report_status=="All"):
-		report_status=''
-
-	from_date=datetime(2000,1,1,0,0,0)
-	if 'from_date' in filters:
-		from_date=filters["from_date"]
-		from_date = datetime.strptime(from_date,'%Y-%m-%d')
-		from_date = from_date.strftime('%Y-%m-%d')
-		
-	to_date=datetime(2000,1,1,0,0,0)
-	if 'to_date' in filters:
-		to_date=filters["to_date"]
-		to_date = datetime.strptime(to_date,'%Y-%m-%d')
-		to_date = to_date.strftime('%Y-%m-%d')
-
-
-
-	gate_pass_details =frappe.db.sql("""
-		select gate_pass.name,gate_pass.division,gate_pass.department,gate_pass.from_date,item.remaining,
-		gate_pass.owner,gate_pass.vendor,gate_pass.status ,item.pdt_name as item,item.quantity,item.work_to_be_done,item.expected_delivery_date
-		
-		from `tabNitta Gate Pass` gate_pass
-		left join `tabNitta item` item on gate_pass.name=item.parent  where (gate_pass.from_date BETWEEN %(from_date)s AND %(to_date)s)
-        AND (gate_pass.department = %(department)s OR %(department)s = '')
-        AND (gate_pass.division = %(division)s OR %(division)s = '') 
-		AND (gate_pass.status=%(status)s OR %(status)s='' AND gate_pass.status!='Draft') 
-		
-	""",values={'from_date':from_date,'to_date':to_date,'department':department,'division':division,'status':report_status},as_dict=1)
 	
-	for gate_pass in gate_pass_details:
-		data.append({
-			'division':gate_pass.division,
-			'department':gate_pass.department,
-			'gate_pass':gate_pass.name,
-			'initiator':gate_pass.owner,
-			'product':gate_pass.item,
-			'status':gate_pass.status,
-			'quantity':gate_pass.quantity,
-			'work_to_be_done':gate_pass.work_to_be_done,
-			'expected_delivery_date':gate_pass.expected_delivery_date,
-			'vendor':gate_pass.vendor,
-			'dispatched_date':gate_pass.from_date,
-			'remaining':gate_pass.remaining
+	data=[]
+	gatepass_filter={}
+	gatepass_filter['status']=['!=','Draft']
+
+	from_date=datetime.now()
+	to_date=datetime.now()
+	# getting current user roles
+	# get_roles = frappe.get_roles()
+
+	for key in filters:
+		if key in ["division","department","status"]:
+			gatepass_filter[key] = filters[key]
+			if key == "department" and filters[key] == "All" :
+				del gatepass_filter["department"]
+			if key == "status" and filters[key] == "All" :
+				del gatepass_filter["status"]
+
+			
+		if key=="from_date":
+			from_date=filters[key]
+		if key=="to_date":
+			to_date=filters[key]
+	gatepass_filter["from_date"]=['between',[from_date,to_date]]
+	print("filter",gatepass_filter)
+	gate_pass=frappe.get_all('Nitta Gate Pass',filters=gatepass_filter,fields=['name','department','division','vendor','from_date','owner','status'])
+	print("gate_pass",gate_pass)
+	for item in gate_pass:
+		
+		gate_pass_item=frappe.get_all('Nitta item',filters={'parent':item['name']},
+		fields=['pdt_name','work_to_be_done','expected_delivery_date','remaining','quantity','status'])
+		print("gate_pass_item",gate_pass_item)
+		for d in gate_pass_item:
+			data.append({
+				'division':item['division'],
+				'department':item['department'],
+				'gate_pass':item['name'],
+				'initiator':item['owner'],
+				'product':d['pdt_name'],
+				'status':item['status'],
+				'quantity':d['quantity'],
+				'work_to_be_done':d['work_to_be_done'],
+				'expected_delivery_date':d['expected_delivery_date'],
+				'vendor':item['vendor'],
+				'dispatched_date':item['from_date'],
+				'remaining':d['remaining']
 
 		})
-	
 	return data

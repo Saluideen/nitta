@@ -32,10 +32,10 @@ class NittaGatePass(Document):
 		if self.way_of_dispatch is None and d['department']=="Security":
 			frappe.throw("Please Select Way of Dispatch")
 
-		# Validation for expected delivery date
-		for item in self.item:
-			if item.expected_delivery_date < frappe.utils.today():
-				frappe.throw("Expected Delivery Date cannot be lesser than the current date for item {}".format(item.pdt_name))
+		# # Validation for expected delivery date
+		# for item in self.item:
+		# 	if item.expected_delivery_date < frappe.utils.today():
+		# 		frappe.throw("Expected Delivery Date cannot be lesser than the current date for item {}".format(item.pdt_name))
 
 
 		
@@ -154,8 +154,9 @@ class NittaGatePass(Document):
 
 		if self.current_approval_level==self.max_approval_level:
 			
-			self.next_approval_by=None
+			
 			self.status='Dispatched'
+			self.next_approved_by=None
 			if not self.is_emergency:
 			
 				# Send mail to vendor
@@ -218,8 +219,9 @@ class NittaGatePass(Document):
 				
 				# 'Level '+str(self.current_approval_level+1)+'('+approvaself.status='Level '+str(self.current_approval_level+1)+' Rejected'
 				approval_flow = self.workflow[self.current_approval_level]
+				self.status='Level '+str(self.current_approval_level+1)+'('+approval_flow.department+'-' +approval_flow.role +')'+' Rejected'
 				# self.status=l_flow.department+'-' +approval_flow.role +')'+' Rejected'
-				self.status="Rejected"
+				# self.status="Rejected"
 				self.next_approved_by=None
 				notify_assignment(self.user,'Nitta Gate Pass',self.name,self.status)
 				if current_user_index>0:

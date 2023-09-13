@@ -9,9 +9,9 @@ frappe.query_reports["Nitta Delayed Gate Pass Report"] = {
 			"label": __("Division"),
 			"fieldtype": "Link",
 			"options": "Division",
-			"reqd": 1,
+			// "reqd": 1,
 			
-			default:"All"
+			// default:"All"
 
 
 		}, {
@@ -19,7 +19,7 @@ frappe.query_reports["Nitta Delayed Gate Pass Report"] = {
 			"label": __("Department"),
 			"fieldtype": "Link",
 			"options": "Department",
-			"reqd": 1,
+			// "reqd": 1,
 			default: 'All',
 			"get_query": function () {
 				return {

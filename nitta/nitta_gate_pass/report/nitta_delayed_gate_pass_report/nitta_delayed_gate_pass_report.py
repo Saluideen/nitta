@@ -90,17 +90,24 @@ def get_data(filters):
 
 	data=[]
 
-	department = filters['department']
-	division = filters['division']
-	if(division=='All'):
-		division=''
-	if(department=="All"):
-		department=''
-	
+	# department = filters['department']
+	# division = filters['division']
+	# if(division=='All'):
+	# 	division=''
+	# if(department=="All"):
+	# 	department=''
+	gatepass_filter={}
+	gatepass_filter['Status']=['!=','Draft']
 
-	
-
-
+	for key in filters:
+		if key in ["division","department"]:
+			gatepass_filter[key] = filters[key]
+			if key == "department" and filters[key] == "All" :
+				gatepass_filter["department"]=''
+	if 'department' not in filters:
+		gatepass_filter['department'] = ''
+	if 'division' not in filters:
+		gatepass_filter['division'] = ''
 
 	gate_pass_details =frappe.db.sql("""
 		select gate_pass.name,gate_pass.division,gate_pass.department,gate_pass.owner,gate_pass.vendor,gate_pass.from_date,
@@ -112,12 +119,12 @@ def get_data(filters):
 		DATEDIFF(CURDATE(), pdt.expected_delivery_date) AS delay
 
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
-		where gate_pass.status !="Close" and gate_pass.status !="Rejected" and pdt.expected_delivery_date<CURDATE() and pdt.status!='Completed' and pdt.status!='Assembled'
+		where (gate_pass.status ="Dispatched" or gate_pass.status ="Partially Completed") and pdt.expected_delivery_date<CURDATE() and pdt.status!='Completed' and pdt.status!='Assembled'
         AND (gate_pass.department = %(department)s OR %(department)s = '')
         AND (gate_pass.division = %(division)s OR %(division)s = '') 
 		
 		
-	""",values={'department':department,'division':division},as_dict=1)
+	""",values={'department':gatepass_filter['department'],'division':gatepass_filter['division']},as_dict=1)
 	
 	for gate_pass in gate_pass_details:
 		data.append({

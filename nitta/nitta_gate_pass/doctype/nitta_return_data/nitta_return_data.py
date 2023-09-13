@@ -159,7 +159,7 @@ class NittaReturnData(Document):
 				current_user_index=index
 
 		if self.current_approval_level==self.max_approval_level:
-			self.next_approval_by=None
+			self.next_approved_by=None
 			self.status='Final Approved'
 			if current_user_index>0:
 				self.update_updated_date(current_user_index)
@@ -281,8 +281,8 @@ def delay_reminder():
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
         
         
-		where gate_pass.status !="Close" and gate_pass.status !="Rejected" and pdt.status!='Completed' and pdt.status!='Assembled' 
-		and ( DATEDIFF(CURDATE(), pdt.expected_delivery_date)='31' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='75' or
+		where (gate_pass.status ="Completed" or gate_pass.status ="Partially Completed")  and pdt.status!='Completed' and pdt.status!='Assembled' 
+		and ( DATEDIFF(CURDATE(), pdt.expected_delivery_date)='31' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='42' or
 		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='91' )""",as_dict=1)
 	# Create a dictionary to group items based on vendor_email
 	vendor_items = {}

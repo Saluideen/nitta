@@ -14,7 +14,7 @@
   "remaining_quantity",
   "remarks",
   "status",
-  "sample",
+  "pdt_name",
   "previous_remaining"
  ],
  "fields": [
@@ -66,11 +66,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "sample",
-   "fieldtype": "Data",
-   "label": "sample"
-  },
-  {
    "fieldname": "previous_remaining",
    "fieldtype": "Data",
    "label": "Previous Remaining"
@@ -82,12 +77,18 @@
    "in_list_view": 1,
    "label": "Status",
    "options": "\nAssembled\nCompleted\nPartially Completed"
+  },
+  {
+   "fetch_from": "item.product_name",
+   "fieldname": "pdt_name",
+   "fieldtype": "Data",
+   "label": "pdt name"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-09-12 11:36:28.092859",
+ "modified": "2023-09-12 11:56:09.951880",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Return product Details",

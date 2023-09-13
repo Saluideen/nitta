@@ -9,19 +9,53 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "product_name"
+  "product_name",
+  "column_break_ibrub",
+  "po_number",
+  "section_break_cx3nj",
+  "approximate_amount",
+  "column_break_obug7",
+  "currency"
  ],
  "fields": [
   {
    "fieldname": "product_name",
    "fieldtype": "Data",
    "label": "Product Name"
+  },
+  {
+   "fieldname": "po_number",
+   "fieldtype": "Data",
+   "label": "PO Number"
+  },
+  {
+   "fieldname": "approximate_amount",
+   "fieldtype": "Currency",
+   "label": "Approximate Amount"
+  },
+  {
+   "fieldname": "currency",
+   "fieldtype": "Select",
+   "label": "Currency",
+   "options": "INR"
+  },
+  {
+   "fieldname": "column_break_ibrub",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_cx3nj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_obug7",
+   "fieldtype": "Column Break"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-07 11:11:42.319355",
+ "modified": "2023-09-12 14:46:00.267880",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Product",

@@ -308,7 +308,6 @@
    "label": "Gatepass No"
   }
  ],
- "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [
   {
@@ -316,7 +315,7 @@
    "link_fieldname": "gate_pass"
   }
  ],
- "modified": "2023-09-08 17:29:05.277493",
+ "modified": "2023-09-12 14:49:05.302579",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Gate Pass",
