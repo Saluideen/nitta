@@ -116,26 +116,27 @@ def get_data(filters):
 	gatepass_filter["from_date"]=['between',[from_date,to_date]]
 	print("filter",gatepass_filter)
 	gate_pass=frappe.get_all('Nitta Gate Pass',filters=gatepass_filter,fields=['name','department','division','vendor','from_date','owner','status'])
-	print("gate_pass",gate_pass)
+	
 	for item in gate_pass:
+		if not item['status']=="Draft":
 		
-		gate_pass_item=frappe.get_all('Nitta item',filters={'parent':item['name']},
-		fields=['pdt_name','work_to_be_done','expected_delivery_date','remaining','quantity','status'])
-		print("gate_pass_item",gate_pass_item)
-		for d in gate_pass_item:
-			data.append({
-				'division':item['division'],
-				'department':item['department'],
-				'gate_pass':item['name'],
-				'initiator':item['owner'],
-				'product':d['pdt_name'],
-				'status':item['status'],
-				'quantity':d['quantity'],
-				'work_to_be_done':d['work_to_be_done'],
-				'expected_delivery_date':d['expected_delivery_date'],
-				'vendor':item['vendor'],
-				'dispatched_date':item['from_date'],
-				'remaining':d['remaining']
+			gate_pass_item=frappe.get_all('Nitta item',filters={'parent':item['name']},
+			fields=['pdt_name','work_to_be_done','expected_delivery_date','remaining','quantity','status'])
+		
+			for d in gate_pass_item:
+				data.append({
+					'division':item['division'],
+					'department':item['department'],
+					'gate_pass':item['name'],
+					'initiator':item['owner'],
+					'product':d['pdt_name'],
+					'status':item['status'],
+					'quantity':d['quantity'],
+					'work_to_be_done':d['work_to_be_done'],
+					'expected_delivery_date':d['expected_delivery_date'],
+					'vendor':item['vendor'],
+					'dispatched_date':item['from_date'],
+					'remaining':d['remaining']
 
-		})
+				})
 	return data

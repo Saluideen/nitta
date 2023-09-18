@@ -8,7 +8,8 @@ def execute(filters=None):
 	columns, data = [], []
 	columns=get_column()
 	data =get_data(filters)
-	return columns, data
+	summary=get_summary(data)
+	return columns, data,None,None,summary
 def get_column():
 	
 	return [
@@ -145,4 +146,17 @@ def get_data(filters):
 		})
 	
 	return data
+def get_summary(datas):
+	
+	total_count = len(datas)	
+	return [
+		{
+			'value':total_count,
+			'indicator':'Red',
+			'label':'Total',
+			'datatype':'Int'
+		},
+		
+	]
+
 

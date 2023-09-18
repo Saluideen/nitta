@@ -29,6 +29,11 @@ class NittaReturnData(Document):
 				#validation for way of Return
 				if self.way_of_return is None and d['department']=="Security":
 					frappe.throw("Please Select Way of Return")
+				# validation for product child table empty status
+				if self.product and d['department']=="Store":
+					# Check if all rows in the child table have empty "status" fields
+					if all(not row.get("status") for row in self.product):
+						frappe.throw("Please enter return product Status.")
 		# validation for closed gatepass	
 		Gate_pass_status=frappe.get_all("Nitta Gate Pass",filters={'name':self.gate_pass},
 		fields=['status'])
@@ -45,19 +50,6 @@ class NittaReturnData(Document):
 
 		
 
-	# def before_save(self):
-
-		
-	# 	for item in self.product:
-	# 		if item.status == "Assembled" or item.status == "Completed":
-	# 			self.item_state = "Close"
-				
-	# 		elif item.status == "Partially Completed":
-	# 			self.item_state = "Partially Completed"
-				
-				
-	# 		else:
-	# 			self.item_state = "Select"
 			
 	def after_insert(self):
 		
@@ -65,7 +57,7 @@ class NittaReturnData(Document):
 		self.save(ignore_permissions=True)
 	
 	def on_update(self):
-		delay_reminder()
+		
 		last_update=self.get_doc_before_save()
 		for product in last_update.product:
 			for p in self.product:
@@ -246,16 +238,18 @@ def notify_assignment(shared_by, doctype, doc_name,status):
 	
 	enqueue_create_notification(shared_by, notification_doc)
 				
-
+# get gateapss item child table details to  return doctype item child table
 
 @frappe.whitelist()
 def get_gatepass_details(gate_pass):
 	gate_pass_details=frappe.db.sql("""select * from `tabNitta Gate Pass`  where name=%(name)s""",
 	values={"name":gate_pass},as_dict=1)
-	dispatch_item=frappe.get_all("Nitta item",filters={'parent':gate_pass},
+	dispatch_item=frappe.get_all("Nitta item",filters={'parent':gate_pass,'status': ['not in', ['completed', 'assembled']]},
 	fields=['item','work_to_be_done','expected_delivery_date','quantity','remaining','name','status'])
 
 	return dispatch_item,gate_pass_details
+
+# get employee details
 
 @frappe.whitelist()
 def get_employee_details(name):
@@ -265,7 +259,7 @@ def get_employee_details(name):
 	return employee_details
 
 
-# scheduler for delay mail
+# scheduler for delay mail (to  vendor and finance department)
 
 def delay_reminder():
 	
@@ -281,9 +275,9 @@ def delay_reminder():
 		from `tabNitta Gate Pass`  gate_pass inner join `tabNitta item` pdt on gate_pass.name=pdt.parent
         
         
-		where (gate_pass.status ="Completed" or gate_pass.status ="Partially Completed")  and pdt.status!='Completed' and pdt.status!='Assembled' 
-		and ( DATEDIFF(CURDATE(), pdt.expected_delivery_date)='31' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='42' or
-		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='91' )""",as_dict=1)
+		where (gate_pass.status ="Dispatched" or gate_pass.status ="Partially Completed")  and pdt.status!='Completed' and pdt.status!='Assembled' 
+		and ( DATEDIFF(CURDATE(), pdt.expected_delivery_date)='31' or DATEDIFF(CURDATE(), pdt.expected_delivery_date)='91' or
+		DATEDIFF(CURDATE(), pdt.expected_delivery_date)='366' )""",as_dict=1)
 	# Create a dictionary to group items based on vendor_email
 	vendor_items = {}
 	division_group={}

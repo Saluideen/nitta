@@ -73,14 +73,14 @@
   {
    "fieldname": "recipient_name",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Recipient Name"
+   "label": "Recipient Name",
+   "read_only": 1
   },
   {
    "fieldname": "phone",
    "fieldtype": "Phone",
-   "hidden": 1,
-   "label": "Phone"
+   "label": "Phone",
+   "read_only": 1
   },
   {
    "fieldname": "driver_details_section",
@@ -95,8 +95,8 @@
   {
    "fieldname": "registration_number",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Registration Number"
+   "label": "Registration Number",
+   "read_only": 1
   },
   {
    "fieldname": "vendor_details_section",
@@ -141,9 +141,8 @@
   {
    "fieldname": "contact_number",
    "fieldtype": "Phone",
-   "hidden": 1,
    "label": "Contact Number",
-   "options": "});"
+   "read_only": 1
   },
   {
    "fieldname": "gate_pass",
@@ -223,8 +222,8 @@
   {
    "fieldname": "driver_name",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Name"
+   "label": "Name",
+   "read_only": 1
   },
   {
    "fieldname": "courier_details_section",
@@ -234,8 +233,8 @@
   {
    "fieldname": "courier_number",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Courier Tracking Number"
+   "label": "Courier Tracking Number",
+   "read_only": 1
   },
   {
    "fieldname": "section_break_hrvmz",
@@ -249,8 +248,8 @@
   {
    "fieldname": "courier_company",
    "fieldtype": "Data",
-   "hidden": 1,
-   "label": "Courier Company"
+   "label": "Courier Company",
+   "read_only": 1
   },
   {
    "fieldname": "delivery_chellan",
@@ -268,7 +267,7 @@
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-11 12:06:42.144870",
+ "modified": "2023-09-14 11:04:18.893858",
  "modified_by": "Administrator",
  "module": "NItta Gate Pass",
  "name": "Nitta Return Data",

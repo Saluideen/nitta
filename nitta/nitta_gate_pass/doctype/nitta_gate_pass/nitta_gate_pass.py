@@ -28,14 +28,14 @@ class NittaGatePass(Document):
 		#validation for way of Dispatch
 		if department:
 			for d in department:
-				print(d['department'])
-		if self.way_of_dispatch is None and d['department']=="Security":
-			frappe.throw("Please Select Way of Dispatch")
+				
+				if self.way_of_dispatch is None and d['department']=="Security":
+					frappe.throw("Please Select Way of Dispatch")
 
-		# # Validation for expected delivery date
-		# for item in self.item:
-		# 	if item.expected_delivery_date < frappe.utils.today():
-		# 		frappe.throw("Expected Delivery Date cannot be lesser than the current date for item {}".format(item.pdt_name))
+		# Validation for expected delivery date
+		for item in self.item:
+			if item.expected_delivery_date < frappe.utils.today():
+				frappe.throw("Expected Delivery Date cannot be lesser than the current date for item {}".format(item.pdt_name))
 
 
 		
@@ -134,7 +134,7 @@ class NittaGatePass(Document):
 	
 
 	def update_workflow(self):
-		emergency_dispatch_reminder()
+		
 		
 		self.current_approval_level=0
 		self.max_approval_level=0

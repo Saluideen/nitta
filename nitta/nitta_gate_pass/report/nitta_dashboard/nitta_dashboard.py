@@ -113,10 +113,16 @@ def get_summary(datas):
 			'label':'Total',
 			'datatype':'Int'
 		},
+		# {
+		# 	'value':pending_count,
+		# 	'indicator':'Yellow',
+		# 	'label':'Pending',
+		# 	'datatype':'Int'
+		# },
 		{
-			'value':pending_count,
-			'indicator':'Yellow',
-			'label':'Pending',
+			'value':dispatched_count,
+			'indicator':'Green',
+			'label':'Dispatched',
 			'datatype':'Int'
 		},
 		{
@@ -125,23 +131,19 @@ def get_summary(datas):
 			'label':'Rejected',
 			'datatype':'Int'
 		},
-		{
-			'value':dispatched_count,
-			'indicator':'Green',
-			'label':'Dispatched',
-			'datatype':'Int'
-		},
-		# {
-		# 	'value':closed_count,
-		# 	'indicator':'Red',
-		# 	'label':'Closed',
-		# 	'datatype':'Int'
-		# },
+		
+		
 		{
 			'value':partial_count,
 			
 			'indicator':'Blue',
-			'label':'Partially Completed',
+			'label':'Partially Returned',
+			'datatype':'Int'
+		},
+		{
+			'value':closed_count,
+			'indicator':'Red',
+			'label':'Closed',
 			'datatype':'Int'
 		},
 	]
@@ -195,7 +197,7 @@ def get_chart(datas):
 			'datasets':[
 				{'name':'Dispatched','values':dispatched},
 				{'name':'Rejected','values':rejected},
-				{'name':'Pending','values':pending},
+				# {'name':'Pending','values':pending},
 				{'name':'Close','values':close},
 				{'name':'Partial','values':partial}
 				]
