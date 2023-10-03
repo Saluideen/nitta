@@ -7,6 +7,9 @@ app_description = "Nitta"
 app_email = "nitta@gmail.com"
 app_license = "m"
 
+app_logo_url = "/assets/nitta/images/logo.png"
+brand_html = '<img src="/assets/nitta/images/logo.png">&nbsp&nbsp<b>Nitta Gate Pass</b>'
+
 # Includes in <head>
 # ------------------
 

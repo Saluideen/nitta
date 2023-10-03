@@ -8,13 +8,13 @@ frappe.listview_settings['Nitta Gate Pass'] = {
         return [doc.status, 'yellow', 'status,=,' + doc.status];
 
     if (doc.status.includes('Dispatched'))
-        return [doc.status, 'orange', 'status,like,' + doc.status];
+        return [doc.status, 'green', 'status,like,' + doc.status];
 
     if (doc.status.includes('Partially Completed'))
-        return [doc.status, 'violet', 'status,like,' + doc.status];
+        return [doc.status, 'orange', 'status,like,' + doc.status];
 
     if (doc.status.includes('Close'))
-        return [doc.status, 'peach', 'status,like,' + doc.status];
+        return [doc.status, 'blue', 'status,like,' + doc.status];
 
     },
 }
