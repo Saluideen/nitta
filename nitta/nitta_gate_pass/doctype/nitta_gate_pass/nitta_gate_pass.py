@@ -218,8 +218,8 @@ class NittaGatePass(Document):
 				
 				
 				# 'Level '+str(self.current_approval_level+1)+'('+approvaself.status='Level '+str(self.current_approval_level+1)+' Rejected'
-				approval_flow = self.workflow[self.current_approval_level]
-				self.status='Level '+str(self.current_approval_level+1)+'('+approval_flow.department+'-' +approval_flow.role +')'+' Rejected'
+				approval_flow = self.workflow[self.current_approval_level-1]
+				self.status='Level '+str(self.current_approval_level)+'('+approval_flow.department+'-' +approval_flow.role +')'+' Rejected'
 				# self.status=l_flow.department+'-' +approval_flow.role +')'+' Rejected'
 				# self.status="Rejected"
 				self.next_approved_by=None
